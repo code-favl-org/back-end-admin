@@ -1,0 +1,15 @@
+{# Página "sin permiso" (la renderiza BackofficeExceptionFilter). Usa: roleLabel. #}
+{% extends "backoffice/shared/views/layouts/base.njk" %}
+{% block title %}Sin permiso{% endblock %}
+
+{% block content %}
+<div class="app-content pt-4">
+  <div class="container-fluid">
+    <div class="text-center py-5">
+      <h1 class="display-4 text-danger"><i class="bi bi-shield-lock"></i> 403</h1>
+      <p class="lead">Tu rol ({{ roleLabel }}) no tiene acceso a esta sección.</p>
+      <a href="/admin/panel" class="btn btn-primary">Volver al panel</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

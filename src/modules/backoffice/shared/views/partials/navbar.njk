@@ -1,0 +1,65 @@
+{# Barra superior: notificaciones (datos de ejemplo), tema claro/oscuro y menú del usuario con "Cerrar sesión" (POST /admin/logout).
+  Usa: user, roleLabel. #}
+<nav class="app-header navbar navbar-expand bg-body">
+  <div class="container-fluid">
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-bs-toggle="dropdown" href="#" aria-label="Notificaciones">
+          <i class="bi bi-bell-fill"></i>
+          <span class="navbar-badge badge text-bg-warning">3</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+          <span class="dropdown-item dropdown-header">3 notificaciones</span>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="bi bi-people-fill me-2"></i> Nuevo socio registrado
+            <span class="float-end text-secondary fs-7">5 min</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="bi bi-cash-coin me-2"></i> Pago recibido
+            <span class="float-end text-secondary fs-7">1 hora</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item dropdown-footer">Ver todas</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" data-lte-toggle="fullscreen" aria-label="Alternar pantalla completa">
+          <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
+          <i data-lte-icon="minimize" class="bi bi-fullscreen-exit d-none"></i>
+        </a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link" href="#" id="bd-theme" aria-label="Cambiar esquema de color" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-sun-fill" data-lte-theme-icon="light"></i>
+          <i class="bi bi-moon-fill d-none" data-lte-theme-icon="dark"></i>
+          <i class="bi bi-circle-half d-none" data-lte-theme-icon="auto"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme" style="--bs-dropdown-min-width: 8rem">
+          <li><button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false"><i class="bi bi-sun-fill me-2"></i>Claro<i class="bi bi-check-lg ms-auto d-none"></i></button></li>
+          <li><button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false"><i class="bi bi-moon-fill me-2"></i>Oscuro<i class="bi bi-check-lg ms-auto d-none"></i></button></li>
+          <li><button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true"><i class="bi bi-circle-half me-2"></i>Automático<i class="bi bi-check-lg ms-auto d-none"></i></button></li>
+        </ul>
+      </li>
+      <li class="nav-item dropdown user-menu">
+        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+          <img src="/static/assets/img/user2-160x160.jpg" class="user-image rounded-circle shadow" alt="Usuario" />
+          <span class="d-none d-md-inline">{{ user.nombre if user else 'Administrador' }}</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+          <li class="user-header text-bg-primary">
+            <img src="/static/assets/img/user2-160x160.jpg" class="rounded-circle shadow" alt="Usuario" />
+            <p>{{ user.nombre if user else 'Administrador' }}<small>{{ roleLabel or 'FAVL' }}</small></p>
+          </li>
+          <li class="user-footer">
+            <a href="#" class="btn btn-outline-secondary">Perfil</a>
+            <form method="post" action="/admin/logout" class="d-inline float-end">
+              <button type="submit" class="btn btn-outline-danger">Cerrar sesión</button>
+            </form>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>

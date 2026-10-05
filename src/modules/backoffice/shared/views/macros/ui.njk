@@ -1,0 +1,44 @@
+{# Encabezado de página con breadcrumb. crumbs = [{label, href?}], el último es la página actual. #}
+{% macro page_header(title, crumbs=[], home=true) %}
+<div class="app-content-header">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6">
+        <h1 class="mb-0 fs-3">{{ title }}</h1>
+      </div>
+      {% if crumbs.length %}
+      <div class="col-sm-6">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb float-sm-end">
+            {% if home %}<li class="breadcrumb-item"><a href="/admin/panel">Panel</a></li>{% endif %}
+            {% for c in crumbs %}
+              {% if loop.last %}
+                <li class="breadcrumb-item active" aria-current="page">{{ c.label }}</li>
+              {% elif c.href %}
+                <li class="breadcrumb-item"><a href="{{ c.href }}">{{ c.label }}</a></li>
+              {% else %}
+                <li class="breadcrumb-item">{{ c.label }}</li>
+              {% endif %}
+            {% endfor %}
+          </ol>
+        </nav>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro badge(texto, color='secondary') %}<span class="badge text-bg-{{ color }}">{{ texto }}</span>{% endmacro %}
+
+{# Botones editar / eliminar de las tablas. #}
+{% macro acciones(editar_href=none) %}
+<div class="text-end">
+  {% if editar_href %}
+  <a href="{{ editar_href }}" class="btn btn-sm btn-outline-primary" title="Editar"><i class="bi bi-pencil"></i></a>
+  {% else %}
+  <button type="button" class="btn btn-sm btn-outline-primary" title="Editar"><i class="bi bi-pencil"></i></button>
+  {% endif %}
+  <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar"><i class="bi bi-trash"></i></button>
+</div>
+{% endmacro %}

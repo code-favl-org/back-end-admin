@@ -1,0 +1,94 @@
+{# Formulario compartido por nueva.njk y editar.njk. Recibe: noticia, categorias[], action (URL del POST). #}
+<div class="app-content">
+  <div class="container-fluid">
+    <form id="form-noticia" method="post" action="{{ action }}" enctype="multipart/form-data">
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="card">
+            <div class="card-header"><h3 class="card-title">Contenido</h3></div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label for="titulo-noticia" class="form-label">Título *</label>
+                <input type="text" class="form-control" id="titulo-noticia" name="titulo" required
+                  placeholder="Ej: Campeonato Argentino 2026" value="{{ noticia.titulo }}">
+              </div>
+
+              <div class="mb-3">
+                <label for="resumen-noticia" class="form-label">Resumen</label>
+                <textarea class="form-control" id="resumen-noticia" name="resumen" rows="2"
+                  placeholder="Breve descripción que aparecerá en el listado">{{ noticia.resumen }}</textarea>
+              </div>
+
+              <div class="mb-3">
+                <label for="contenido-noticia" class="form-label">Cuerpo de la noticia</label>
+                {# autoescape convierte el HTML en entidades, que es lo correcto dentro de un textarea #}
+                <textarea class="form-control" id="contenido-noticia" name="contenido" rows="15">{{ noticia.contenido }}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="card">
+            <div class="card-header"><h3 class="card-title">Publicación</h3></div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label for="estado-noticia" class="form-label">Estado</label>
+                <select class="form-select" id="estado-noticia" name="estado">
+                  <option value="borrador" {{ 'selected' if noticia.estado == 'borrador' }}>Borrador</option>
+                  <option value="publicada" {{ 'selected' if noticia.estado == 'publicada' }}>Publicada</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label for="fecha-noticia" class="form-label">Fecha</label>
+                <input type="date" class="form-control" id="fecha-noticia" name="fecha" value="{{ noticia.fecha }}">
+              </div>
+
+              <div class="mb-3">
+                <label for="autor-noticia" class="form-label">Autor</label>
+                <input type="text" class="form-control" id="autor-noticia" name="autor" value="{{ noticia.autor }}">
+              </div>
+
+              <div class="mb-3">
+                <label for="categoria-noticia" class="form-label">Categoría</label>
+                <select class="form-select" id="categoria-noticia" name="categoria">
+                  <option value="">Sin categoría</option>
+                  {% for c in categorias %}
+                  <option value="{{ c }}" {{ 'selected' if noticia.categoria == c }}>{{ c }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label for="imagen-portada" class="form-label">Imagen de portada</label>
+                <input type="file" class="d-none" id="imagen-portada" name="portada" accept="image/*">
+                <div class="input-group">
+                  <button type="button" class="btn btn-outline-secondary" id="btn-elegir-portada">
+                    <i class="bi bi-folder2-open me-1"></i> {{ 'Cambiar archivo' if noticia.portada else 'Elegir archivo' }}
+                  </button>
+                  <input type="text" class="form-control" id="nombre-archivo-portada" readonly
+                    placeholder="Ningún archivo seleccionado" value="{{ noticia.portada }}">
+                </div>
+                <div class="form-text">
+                  {% if noticia.portada %}Dejá vacío para mantener la actual. {% else %}Se muestra en el listado. {% endif %}Máx. 2 MB.
+                </div>
+                <div id="preview-portada" class="mt-2">
+                  {% if noticia.portadaUrl %}
+                  <img src="{{ noticia.portadaUrl }}" class="img-fluid rounded border" alt="Portada actual">
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="card-footer d-flex gap-2">
+              <button type="submit" class="btn btn-primary flex-grow-1">
+                <i class="bi bi-save me-1"></i> {{ submitLabel }}
+              </button>
+              <a href="/admin/web/noticias" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

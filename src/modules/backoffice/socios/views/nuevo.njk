@@ -1,0 +1,65 @@
+{# Alta de socio. Recibe: clubes[] (nombres, para el selector). Envía POST /admin/socios. #}
+{% extends "backoffice/shared/views/layouts/base.njk" %}
+{% from "backoffice/shared/views/macros/ui.njk" import page_header %}
+
+{% block title %}Nuevo socio{% endblock %}
+
+{% block content %}
+{{ page_header('Nuevo socio', [{ label: 'Socios', href: '/admin/socios' }, { label: 'Nuevo' }]) }}
+
+<div class="app-content">
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Datos del socio</h3></div>
+      <div class="card-body">
+        <form method="post" action="/admin/socios">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="nombre" class="form-label">Nombre *</label>
+              <input type="text" class="form-control" id="nombre" name="nombre" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="apellido" class="form-label">Apellido *</label>
+              <input type="text" class="form-control" id="apellido" name="apellido" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="dni" class="form-label">DNI *</label>
+              <input type="text" class="form-control" id="dni" name="dni" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <input type="text" class="form-control" id="telefono" name="telefono">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="club" class="form-label">Club</label>
+              <select class="form-select" id="club" name="club">
+                <option value="">Seleccionar club…</option>
+                {% for c in clubes %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="fecha-alta" class="form-label">Fecha de alta</label>
+              <input type="date" class="form-control" id="fecha-alta" name="fechaAlta">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="estado" class="form-label">Estado</label>
+              <select class="form-select" id="estado" name="estado">
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Guardar</button>
+            <a href="/admin/socios" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
