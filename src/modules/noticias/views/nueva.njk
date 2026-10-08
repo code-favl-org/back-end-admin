@@ -1,0 +1,17 @@
+{# Alta de noticia. Recibe: noticia (valores iniciales), categorias[], action. Usa _form.njk y _scripts.njk. #}
+{% extends "layouts/base.njk" %}
+{% from "macros/ui.njk" import page_header %}
+
+{% block title %}Nueva noticia{% endblock %}
+
+{% block content %}
+{{ page_header('Nueva noticia', [
+  { label: 'Gestión WEB' },
+  { label: 'Noticias', href: '/admin/web/noticias' },
+  { label: 'Nueva' }
+]) }}
+{% set submitLabel = 'Guardar' %}
+{% include "noticias/views/_form.njk" %}
+{% endblock %}
+
+{% block scripts %}{% include "noticias/views/_scripts.njk" %}{% endblock %}

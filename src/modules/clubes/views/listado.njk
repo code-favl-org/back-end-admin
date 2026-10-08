@@ -1,0 +1,17 @@
+{# Listado de clubes. Por ahora estática (sin datos del servidor). #}
+{% extends "layouts/base.njk" %}
+{% from "macros/ui.njk" import page_header %}
+
+{% block title %}Clubes{% endblock %}
+
+{% block content %}
+{{ page_header('Clubes', [{ label: 'Clubes' }, { label: 'Listado' }]) }}
+
+<div class="app-content">
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-body"><p>Sección en construcción.</p></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

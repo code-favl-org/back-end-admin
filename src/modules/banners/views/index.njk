@@ -1,0 +1,39 @@
+{# Listado de banners. Recibe: banners[{titulo, detalle, imagen}]. #}
+{% extends "layouts/base.njk" %}
+{% from "macros/ui.njk" import page_header %}
+
+{% block title %}Banners{% endblock %}
+
+{% block content %}
+{{ page_header('Banners', [{ label: 'Gestión WEB' }, { label: 'Banners' }]) }}
+
+<div class="app-content">
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Banners del sitio</h3>
+        <div class="card-tools">
+          <button class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i> Nuevo banner</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          {% for b in banners %}
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <img src="{{ b.imagen }}" class="card-img-top" alt="{{ b.titulo }}">
+              <div class="card-body">
+                <h5 class="card-title">{{ b.titulo }}</h5>
+                <p class="card-text text-muted small">{{ b.detalle }}</p>
+                <button class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i> Editar</button>
+                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Eliminar</button>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

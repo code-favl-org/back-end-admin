@@ -1,0 +1,44 @@
+{# Pantalla de login (independiente del layout del backoffice).
+  Recibe: next (ruta a la que volver; vacío => página del rol), error?, usuario?. #}
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAVL | Ingresar</title>
+  <link rel="icon" type="image/ico" href="/static/assets/img/favl/favicon.ico">
+  <link rel="stylesheet" href="/static/css/adminlte.css" />
+  <link rel="stylesheet" href="/static/css/bootstrap-icons.css" />
+</head>
+
+<body class="login-page bg-body-secondary">
+  <div class="login-box">
+    <div class="login-logo text-center mb-3">
+      <img src="/static/assets/img/favl/logo.png" alt="FAVL" height="64">
+    </div>
+    <div class="card">
+      <div class="card-body login-card-body">
+        <p class="login-box-msg">Ingresá para administrar</p>
+
+        {% if error %}<div class="alert alert-danger py-2">{{ error }}</div>{% endif %}
+
+        <form method="post" action="/admin/login">
+          <input type="hidden" name="next" value="{{ next }}">
+          <div class="input-group mb-3">
+            <input type="text" name="usuario" value="{{ usuario }}" class="form-control" placeholder="Usuario" autocomplete="username" required autofocus>
+            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+          </div>
+          <div class="input-group mb-3">
+            <input type="password" name="password" class="form-control" placeholder="Contraseña" autocomplete="current-password" required>
+            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</body>
+
+</html>

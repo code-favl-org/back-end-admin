@@ -1,0 +1,46 @@
+{# Listado de noticias. Recibe: noticias[{id, titulo, fecha, autor, categoria, estado}]. #}
+{% extends "layouts/base.njk" %}
+{% from "macros/ui.njk" import page_header, badge, acciones %}
+
+{% block title %}Noticias{% endblock %}
+
+{% block content %}
+{{ page_header('Noticias', [{ label: 'Gestión WEB' }, { label: 'Noticias' }]) }}
+
+<div class="app-content">
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Listado de noticias</h3>
+        <div class="card-tools">
+          <a href="/admin/web/noticias/nueva" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i> Nueva noticia
+          </a>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-striped table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Título</th><th>Fecha</th><th>Autor</th><th>Categoría</th><th>Estado</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for n in noticias %}
+            <tr>
+              <td>{{ n.titulo }}</td>
+              <td>{{ n.fecha }}</td>
+              <td>{{ n.autor }}</td>
+              <td>{{ n.categoria }}</td>
+              <td>{{ badge(n.estado, 'success' if n.estado == 'Publicada' else 'warning') }}</td>
+              <td>{{ acciones('/admin/web/noticias/' ~ n.id ~ '/editar') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

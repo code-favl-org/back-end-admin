@@ -1,0 +1,4 @@
+{# Inserta la plantilla de menú seleccionada por el middleware. #}
+<ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" data-accordion="false" id="navigation">
+  {% if menuTemplate %}{% include menuTemplate %}{% endif %}
+</ul>

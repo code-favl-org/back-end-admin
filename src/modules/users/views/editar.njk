@@ -1,0 +1,22 @@
+{% extends "layouts/base.njk" %}
+{% from "macros/ui.njk" import page_header, badge %}
+
+{% block title %}Editar usuario{% endblock %}
+
+{% block content %}
+{{ page_header('Editar usuario', [{ label: 'Usuarios', href: '/admin/usuarios' }, { label: usuario.usuario }]) }}
+<div class="app-content">
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">Datos de acceso</h3>
+        {{ badge('Activo' if usuario.activo else 'Inactivo', 'success' if usuario.activo else 'secondary') }}
+      </div>
+      <div class="card-body">
+        {% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
+        {% include "users/views/_form.njk" %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

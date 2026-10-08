@@ -6,24 +6,29 @@
     "build": "nest build",
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "start:prod": "NODE_ENV=production node dist/main.js",
-    "build:all": "npm run build:frontend && npm run build",
-    "build:frontend": "pnpm --dir frontend install --frozen-lockfile && pnpm --dir frontend build",
-    "dev:frontend": "pnpm --dir frontend dev"
+    "start:prod": "NODE_ENV=production node dist/main.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
+    "@nestjs/jwt": "^11",
     "@nestjs/platform-express": "^11.0.0",
+    "@nestjs/typeorm": "^11.0.3",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "mysql2": "^3.24.5",
     "nunjucks": "^3.2.4",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.31"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
+    "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.0",
     "@types/node": "^22.0.0",
     "@types/nunjucks": "^3.2.6",
+    "ts-node": "^10.9.2",
     "typescript": "^5.7.0"
   },
   "packageManager": "pnpm@10.5.2+sha512.da9dc28cd3ff40d0592188235ab25d3202add8a207afbedc682220e4a0029ffbff4562102b9e6e46b4e3f9e8bd53e6d05de48544b0c57d4b0179e22c76d1199b"

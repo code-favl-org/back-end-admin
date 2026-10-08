@@ -1,0 +1,39 @@
+{# Cuotas por socio. Recibe: meses[] (columnas) y cuotas[{socio, pagos[], estado, color}]. #}
+{% extends "layouts/base.njk" %}
+{% from "macros/ui.njk" import page_header, badge %}
+
+{% block title %}Cuotas{% endblock %}
+
+{% block content %}
+{{ page_header('Cuotas', [{ label: 'Socios' }, { label: 'Cuotas' }]) }}
+
+{% set colores = { 'Pagada': 'success', 'Impaga': 'danger', 'Pendiente': 'warning' } %}
+
+<div class="app-content">
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Cuotas del año</h3></div>
+      <div class="card-body p-0">
+        <table class="table table-striped mb-0">
+          <thead>
+            <tr>
+              <th>Socio</th>
+              {% for m in meses %}<th>{{ m }}</th>{% endfor %}
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in cuotas %}
+            <tr>
+              <td>{{ c.socio }}</td>
+              {% for p in c.pagos %}<td>{{ badge(p, colores[p]) }}</td>{% endfor %}
+              <td>{{ badge(c.estado, c.color) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

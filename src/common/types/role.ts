@@ -1,31 +1,25 @@
-/**
- * Roles del backoffice. Es la ÚNICA fuente de verdad: guards, menú y
- * controladores usan este enum (nunca strings sueltos).
- *
- * `Admin` es superusuario: pasa todos los chequeos de rol.
- */
-export enum Role {
-  Admin = 'admin',
-  Secretaria = 'secretaria',
-  Tesoreria = 'tesoreria',
-  Comunicacion = 'comunicacion',
-}
+/** Valores de rol compartidos por la app, la base y los tokens. */
+export const Role = {
+  admin: 'admin',
+  editor: 'editor',
+  tesorero: 'tesorero',
+  cd: 'cd',
+  club: 'club',
+  piloto: 'piloto',
+} as const;
+
+export type Role = (typeof Role)[keyof typeof Role];
 
 export const ROLE_LABELS: Record<Role, string> = {
-  [Role.Admin]: 'Administrador',
-  [Role.Secretaria]: 'Secretaría',
-  [Role.Tesoreria]: 'Tesorería',
-  [Role.Comunicacion]: 'Comunicación',
+  [Role.admin]: 'Administrador',
+  [Role.editor]: 'Editor',
+  [Role.tesorero]: 'Tesorero',
+  [Role.cd]: 'Comisión directiva',
+  [Role.club]: 'Club',
+  [Role.piloto]: 'Piloto',
 };
 
-/**
- * ¿Puede acceder alguien con `userRoles` a algo que exige `required`?
- * - Sin roles requeridos  -> basta con estar autenticado.
- * - Admin                 -> siempre.
- * - Cualquier otro        -> debe tener AL MENOS UNO de los requeridos.
- */
-export function canAccess(userRoles: readonly Role[], required?: readonly Role[]): boolean {
-  if (!required || required.length === 0) return true;
-  if (userRoles.includes(Role.Admin)) return true;
-  return required.some((r) => userRoles.includes(r));
+/** Comprueba si un texto coincide con una clave/valor del mapa de roles. */
+export function isRole(value: string): value is Role {
+  return Object.prototype.hasOwnProperty.call(Role, value);
 }
