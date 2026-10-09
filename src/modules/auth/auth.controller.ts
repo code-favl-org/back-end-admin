@@ -1,4 +1,5 @@
 import { Body, Controller, ForbiddenException, Get, Post, Query, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { Public } from '../../common/authorization';
 import { AuthService } from './auth.service';
@@ -18,6 +19,7 @@ const LOGIN_VIEW = 'auth/views/login';
  * sesión y para que siempre sea posible cerrar una sesión existente. Esto no significa
  * que las páginas privadas del backoffice sean públicas.
  */
+@ApiTags('Autenticación')
 @Controller('admin')
 export class AuthController {
   constructor(
@@ -41,6 +43,15 @@ export class AuthController {
    */
   @Public()
   @Get('login')
+  @ApiOperation({
+    summary: 'Mostrar el formulario de acceso',
+    description:
+      'Con sesión ya iniciada no vuelve a pedir credenciales: redirige a `next` (si es una ruta ' +
+      'interna segura) o al inicio que corresponde al rol.',
+  })
+  @ApiQuery({ name: 'next', required: false, description: 'Ruta del backoffice a la que volver tras el login.' })
+  @ApiResponse({ status: 200, description: 'HTML del formulario.' })
+  @ApiResponse({ status: 302, description: 'Ya hay sesión: redirige al destino.' })
   loginForm(@Req() req: Request, @Res() res: Response, @Query('next') next?: string) {
     if (req.user) return res.redirect(redirectAfterLogin(next, req.user));
     return res.render(LOGIN_VIEW, { next: safeNext(next) ?? '' });
@@ -62,6 +73,26 @@ export class AuthController {
    */
   @Public()
   @Post('login')
+  @ApiOperation({
+    summary: 'Iniciar sesión',
+    description:
+      'Deja los tokens en cookies, así que después de ejecutarlo se pueden probar las rutas ' +
+      'privadas desde esta misma UI.',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['usuario', 'password'],
+      properties: {
+        usuario: { type: 'string', example: 'admin' },
+        password: { type: 'string', format: 'password', example: 'contraseña' },
+        next: { type: 'string', description: 'Ruta interna a la que volver (opcional).', example: '/admin/panel' },
+      },
+    },
+  })
+  @ApiResponse({ status: 302, description: 'Credenciales válidas: setea las cookies y redirige al destino.' })
+  @ApiResponse({ status: 401, description: 'Credenciales inválidas: vuelve a mostrar el formulario con el error.' })
+  @ApiResponse({ status: 403, description: 'El rol no tiene acceso al backoffice: vuelve a mostrar el formulario.' })
   async login(
     @Req() req: Request,
     @Res() res: Response,
@@ -97,6 +128,8 @@ export class AuthController {
    */
   @Public()
   @Post('logout')
+  @ApiOperation({ summary: 'Cerrar sesión', description: 'Revoca la sesión y borra las cookies.' })
+  @ApiResponse({ status: 302, description: 'Redirige al formulario de acceso.' })
   async logout(@Req() req: Request, @Res() res: Response) {
     const { accessToken, refreshToken } = this.sessions.tokensFrom(req);
     await this.auth.logout(accessToken, refreshToken);

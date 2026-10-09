@@ -41,6 +41,13 @@ ese usuario, sin contraseña. Para cambiar de rol: *Cerrar sesión* y elegir otr
 - Con el login apagado, `POST /admin/dev-login` responde 404.
 - Código: `backoffice/auth/dev-login.controller.ts`.
 
+### Documentación de rutas (Swagger)
+
+La UI de Swagger queda en **`/admin/docs`** y el OpenAPI crudo en `/admin/docs/openapi.json`
+(con el `PORT` del `.env`: p. ej. http://localhost:5000/admin/docs). Lista todas las rutas del
+backoffice con sus formularios; para probar una privada alcanza con hacer `POST /admin/login`
+desde la propia UI, que deja la sesión en cookies. Se configura en `src/config/swagger.config.ts`.
+
 ## Estructura
 
     frontend/                  Sitio público (React + Vite). Se compila a frontend/dist y Nest lo sirve en `/`.

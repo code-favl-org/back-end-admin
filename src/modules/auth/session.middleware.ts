@@ -12,6 +12,9 @@ import { SessionService } from './session.service';
  *  2. access vencido/ausente + refresh válido -> se renueva el par, se reenvían las cookies
  *  3. nada válido                    -> sin usuario (el guard redirige al login)
  *
+ * El vencimiento del access token (rutina: dura `AUTH_ACCESS_TOKEN_TTL_MINUTES`) no lanza
+ * excepción: `readAccessToken` devuelve `undefined` y acá se renueva.
+ *
  * Se aplica solo a `/admin/*` (ver AppModule.configure).
  */
 @Injectable()
@@ -28,7 +31,8 @@ export class SessionMiddleware implements NestMiddleware {
 
       if (accessToken) {
         try {
-          user = await this.auth.verifyAccessToken(accessToken);
+          // Vencido => `undefined` (sin excepción): abajo se renueva con el refresh.
+          user = await this.auth.readAccessToken(accessToken);
         } catch (error) {
           if (!(error instanceof UnauthorizedException)) throw error;
         }

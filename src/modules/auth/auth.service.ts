@@ -18,7 +18,6 @@ import { User } from '../users/entities/user.entity';
 import { AuthSession } from './entities/auth-session.entity';
 
 const MINUTE_MS = 60 * 1000;
-
 /** Claims de los JWT: los MISMOS que emite back-end-public (HS256, issuer/audience `favl-api`). */
 interface SessionJwtClaims {
   sub: string;
@@ -30,6 +29,9 @@ interface SessionJwtClaims {
   role?: string;
   usuario?: string;
   email?: string;
+  /** Los agrega `jsonwebtoken` al firmar: `exp` en segundos desde la época. */
+  iat?: number;
+  exp?: number;
 }
 
 export interface AuthTokens {
@@ -38,13 +40,6 @@ export interface AuthTokens {
   accessExpiresAt: Date;
   refreshExpiresAt: Date;
   user: AuthUser;
-}
-
-export class AccessTokenExpiredException extends UnauthorizedException {
-  constructor() {
-    super('Access token expirado.');
-    this.name = 'AccessTokenExpiredException';
-  }
 }
 
 /**
@@ -210,18 +205,23 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * Valida un access token SIN ir a la base (firma + vencimiento + sesión no revocada).
-   * Rechaza tokens cuyo rol no pertenece a los roles válidos del sistema.
-   * @throws AccessTokenExpiredException si solo está vencido (hay que usar el refresh).
+   * Lee un access token SIN ir a la base (firma + claims + sesión no revocada).
+   *
+   * Devuelve el usuario, o `undefined` si el token **sólo está vencido**: es el caso normal cada
+   * `AUTH_ACCESS_TOKEN_TTL_MINUTES` y lo resuelve el refresh, así que no es una excepción (una
+   * excepción acá frena el depurador en cada pedido y hace parecer un fallo lo que es rutina).
+   * Un token inválido (firma, claims o rol) sí lanza `UnauthorizedException`.
    */
-  async verifyAccessToken(token: string): Promise<AuthUser> {
-    const claims = await this.verifyToken(token, 'access');
+  async readAccessToken(token: string): Promise<AuthUser | undefined> {
+    const claims = await this.verifyToken(token, 'access', { ignoreExpiration: true });
 
     if (this.isSessionRevoked(claims.sid)) throw new UnauthorizedException('Sesión revocada.');
     if (!claims.role || !claims.usuario || !claims.email) throw new UnauthorizedException('Access token inválido.');
     if (!isRole(claims.role)) {
       throw new UnauthorizedException('Tu usuario no tiene acceso al backoffice.');
     }
+
+    if (this.isExpired(claims)) return undefined;
 
     return {
       id: Number(claims.sub),
@@ -230,10 +230,6 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
       email: claims.email,
       roles: [Role[claims.role]],
     };
-  }
-
-  isAccessTokenExpired(error: unknown): boolean {
-    return error instanceof AccessTokenExpiredException;
   }
 
   /** Revoca la sesión a la que pertenecen los tokens (si existe). */
@@ -335,14 +331,18 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
     };
   }
 
-  private async verifyToken(token: string, expectedType: SessionJwtClaims['typ']): Promise<SessionJwtClaims> {
+  private async verifyToken(
+    token: string,
+    expectedType: SessionJwtClaims['typ'],
+    options: { ignoreExpiration?: boolean } = {},
+  ): Promise<SessionJwtClaims> {
     let claims: SessionJwtClaims;
     try {
-      claims = await this.jwt.verifyAsync<SessionJwtClaims>(token);
-    } catch (error) {
-      if (expectedType === 'access' && error instanceof Error && error.name === 'TokenExpiredError') {
-        throw new AccessTokenExpiredException();
-      }
+      claims = await this.jwt.verifyAsync<SessionJwtClaims>(
+        token,
+        options.ignoreExpiration ? { ignoreExpiration: true } : {},
+      );
+    } catch {
       throw new UnauthorizedException('Token ausente, inválido o vencido.');
     }
 
@@ -350,6 +350,15 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
       throw new UnauthorizedException('Token inválido.');
     }
     return claims;
+  }
+
+  /**
+   * ¿El token pasó su `exp`? Se chequea a mano porque `readAccessToken` verifica sin vencimiento
+   * (así el vencimiento se resuelve renovando, no lanzando). Sin `exp` se considera vencido: no se
+   * puede saber la vigencia, así que no se usa como identidad.
+   */
+  private isExpired(claims: SessionJwtClaims): boolean {
+    return typeof claims.exp !== 'number' || claims.exp * 1000 <= Date.now();
   }
 
   /** Vencimiento tras `durationMs`, sin pasar del tope absoluto de la sesión. */

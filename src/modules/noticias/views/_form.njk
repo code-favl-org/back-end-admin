@@ -1,7 +1,11 @@
-{# Formulario compartido por nueva.njk y editar.njk. Recibe: noticia, categorias[], action (URL del POST). #}
+{# Formulario compartido por nueva.njk y editar.njk. Recibe: noticia, categorias[], action, error y submitLabel. #}
 <div class="app-content">
   <div class="container-fluid">
     <form id="form-noticia" method="post" action="{{ action }}" enctype="multipart/form-data">
+      {% if error %}
+      <div class="alert alert-danger py-2">{{ error }}</div>
+      {% endif %}
+
       <div class="row">
         <div class="col-lg-8">
           <div class="card">
@@ -47,7 +51,9 @@
 
               <div class="mb-3">
                 <label for="autor-noticia" class="form-label">Autor</label>
-                <input type="text" class="form-control" id="autor-noticia" name="autor" value="{{ noticia.autor }}">
+                {# Lo pone el servidor con el usuario logueado (`author_id`): no se edita a mano. #}
+                <input type="text" class="form-control" id="autor-noticia" value="{{ noticia.autor }}" readonly>
+                <div class="form-text">Se guarda el usuario que crea la noticia.</div>
               </div>
 
               <div class="mb-3">
@@ -61,23 +67,44 @@
               </div>
 
               <div class="mb-3">
+                <label for="tags-noticia" class="form-label">Etiquetas</label>
+                <input type="text" class="form-control" id="tags-noticia" name="tags"
+                  placeholder="Ala Delta, Récord, Distancia" value="{{ noticia.tags | join(', ') }}">
+                <div class="form-text">Separadas por coma. Las usa el sitio para agrupar y filtrar.</div>
+              </div>
+
+              <div class="form-check mb-3">
+                <input type="hidden" name="destacadaEnHero" value="no">
+                <input class="form-check-input" type="checkbox" id="destacada-noticia" name="destacadaEnHero"
+                  value="si" {{ 'checked' if noticia.destacadaEnHero }}>
+                <label class="form-check-label" for="destacada-noticia">Destacada en la portada</label>
+                <div class="form-text">Aparece en el carrusel del inicio del sitio.</div>
+              </div>
+
+              <div class="mb-3">
                 <label for="imagen-portada" class="form-label">Imagen de portada</label>
-                <input type="file" class="d-none" id="imagen-portada" name="portada" accept="image/*">
+                <input type="file" class="d-none" id="imagen-portada" name="portada" accept="image/png,image/jpeg,image/webp,image/gif">
                 <div class="input-group">
                   <button type="button" class="btn btn-outline-secondary" id="btn-elegir-portada">
-                    <i class="bi bi-folder2-open me-1"></i> {{ 'Cambiar archivo' if noticia.portada else 'Elegir archivo' }}
+                    <i class="bi bi-folder2-open me-1"></i> {{ 'Cambiar archivo' if noticia.portadaUrl else 'Elegir archivo' }}
                   </button>
                   <input type="text" class="form-control" id="nombre-archivo-portada" readonly
-                    placeholder="Ningún archivo seleccionado" value="{{ noticia.portada }}">
+                    placeholder="Ningún archivo seleccionado">
                 </div>
                 <div class="form-text">
-                  {% if noticia.portada %}Dejá vacío para mantener la actual. {% else %}Se muestra en el listado. {% endif %}Máx. 2 MB.
+                  {% if noticia.portadaUrl %}Dejá vacío para mantener la actual. {% endif %}PNG, JPG, WEBP o GIF, máx. 2 MB.
                 </div>
                 <div id="preview-portada" class="mt-2">
                   {% if noticia.portadaUrl %}
                   <img src="{{ noticia.portadaUrl }}" class="img-fluid rounded border" alt="Portada actual">
                   {% endif %}
                 </div>
+                {% if noticia.portadaUrl %}
+                <div class="form-check mt-2">
+                  <input class="form-check-input" type="checkbox" id="quitar-portada" name="quitarPortada" value="si">
+                  <label class="form-check-label" for="quitar-portada">Quitar la portada actual</label>
+                </div>
+                {% endif %}
               </div>
             </div>
             <div class="card-footer d-flex gap-2">

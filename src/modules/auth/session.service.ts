@@ -20,21 +20,23 @@ export class SessionService {
 
   /** Guarda los tokens en cookies (y los deja también en `req.cookies` para el resto del pedido). */
   start(req: Request, res: Response, tokens: AuthTokens): void {
+      console.log('SessionService.start NUEVO');
     const { auth } = this.config;
     const maxAge = Math.max(0, Math.min(auth.cookieTtlMs, tokens.refreshExpiresAt.getTime() - Date.now()));
 
     res.cookie(auth.accessCookie, tokens.accessToken, { ...this.options, maxAge });
     res.cookie(auth.refreshCookie, tokens.refreshToken, { ...this.options, maxAge });
+    
     // Misma cookie marcadora que setea back-end-public: es solo informativa, nunca autoriza nada.
-    if (tokens.user.roles.some((r) => auth.adminCookieRoles.includes(r))) {
-      res.cookie(auth.adminCookie, tokens.user.roles[0], { ...this.options, maxAge });
-    }
+    // if (tokens.user.roles.some((r) => auth.adminCookieRoles.includes(r))) {
+    //   res.cookie(auth.adminCookie, tokens.user.roles[0], { ...this.options, maxAge });
+    // }
 
     req.cookies = { ...req.cookies, [auth.accessCookie]: tokens.accessToken, [auth.refreshCookie]: tokens.refreshToken };
   }
 
   end(res: Response): void {
     const { auth } = this.config;
-    for (const name of [auth.accessCookie, auth.refreshCookie, auth.adminCookie]) res.clearCookie(name, this.options);
+    for (const name of [auth.accessCookie, auth.refreshCookie]) res.clearCookie(name, this.options);
   }
 }

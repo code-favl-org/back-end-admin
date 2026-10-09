@@ -22,3 +22,6 @@ lerna-debug.log*
 # temp directory
 .temp
 .tmp
+
+# Imágenes subidas desde el backoffice: dato de ejecución, no fuente
+/public/upload
