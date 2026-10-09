@@ -8,6 +8,8 @@ export interface AppConfig {
   isProd: boolean;
   /** PORT (por defecto 3000). */
   port: number;
+  /** Registra peticiones HTTP en consola y `logs/http-requests.log` (REQUEST_LOG, por defecto true). */
+  requestLog: boolean;
   /** MariaDB: DB_HOST, DB_PORT (3306), DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNCHRONIZE. */
   db: {
     host: string;
@@ -65,9 +67,10 @@ function positiveInt(env: NodeJS.ProcessEnv, name: string, fallback: number, max
 }
 
 /** Lee una bandera booleana estricta; ausente o vacía equivale a false. */
-function booleanFlag(env: NodeJS.ProcessEnv, name: string): boolean {
+function booleanFlag(env: NodeJS.ProcessEnv, name: string, fallback = false): boolean {
   const value = env[name];
-  if (value === undefined || value === '' || value === 'false') return false;
+  if (value === undefined || value === '') return fallback;
+  if (value === 'false') return false;
   if (value === 'true') return true;
   throw new Error(`Config inválida: ${name} debe ser "true" o "false"`);
 }
@@ -105,6 +108,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     env: nodeEnv as AppConfig['env'],
     isProd,
     port: positiveInt(env, 'PORT', 3000, 65535),
+    requestLog: booleanFlag(env, 'REQUEST_LOG', true),
     db: {
       host: required(env, 'DB_HOST'),
       port: positiveInt(env, 'DB_PORT', 3306, 65535),

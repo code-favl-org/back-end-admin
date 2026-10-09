@@ -16,7 +16,7 @@ async function bootstrap() {
   const config = app.get<AppConfig>(APP_CONFIG);
 
   // Cada pedido queda en consola con su cuerpo: método, ruta, estado, duración y `dto={...}`.
-  setupHttpLogging(app);
+  setupHttpLogging(app, config.requestLog);
 
   app.use(cookieParser());
 

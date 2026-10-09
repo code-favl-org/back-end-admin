@@ -20,7 +20,6 @@ export class SessionService {
 
   /** Guarda los tokens en cookies (y los deja también en `req.cookies` para el resto del pedido). */
   start(req: Request, res: Response, tokens: AuthTokens): void {
-      console.log('SessionService.start NUEVO');
     const { auth } = this.config;
     const maxAge = Math.max(0, Math.min(auth.cookieTtlMs, tokens.refreshExpiresAt.getTime() - Date.now()));
 

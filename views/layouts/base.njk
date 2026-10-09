@@ -11,6 +11,9 @@
   <script>
     (() => {
       'use strict';
+      window.addEventListener('pageshow', (event) => {
+        if (event.persisted) window.location.reload();
+      });
       const root = document.documentElement;
       if (root.getAttribute('data-lte-color-mode') === 'off') return;
       const STORAGE_KEY = 'lte-theme';
