@@ -14,7 +14,7 @@ import { NoticiasModule } from './modules/noticias/noticias.module';
 import { PaginasModule } from './modules/paginas/paginas.module';
 import { PanelModule } from './modules/panel/panel.module';
 import { SessionMiddleware } from './modules/auth/session.middleware';
-import { SociosModule } from './modules/socios/socios.module';
+import { PilotosModule } from './modules/pilotos/pilotos.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -23,7 +23,7 @@ import { UsersModule } from './modules/users/users.module';
     DatabaseModule,
     AuthModule,
     PanelModule,
-    SociosModule,
+    PilotosModule,
     ClubesModule,
     NoticiasModule,
     BannersModule,

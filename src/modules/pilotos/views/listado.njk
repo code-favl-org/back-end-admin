@@ -1,19 +1,19 @@
-{# Listado de socios. Recibe: socios[{numero, nombre, dni, club, estado}]. #}
+{# Listado de pilotos. Recibe: pilotos[{numero, nombre, dni, club, estado}]. #}
 {% extends "layouts/base.njk" %}
 {% from "macros/ui.njk" import page_header, badge, acciones %}
 
-{% block title %}Socios{% endblock %}
+{% block title %}Pilotos{% endblock %}
 
 {% block content %}
-{{ page_header('Socios', [{ label: 'Socios' }, { label: 'Listado' }]) }}
+{{ page_header('Pilotos', [{ label: 'Pilotos' }, { label: 'Listado' }]) }}
 
 <div class="app-content">
   <div class="container-fluid">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Listado de socios</h3>
+        <h3 class="card-title">Listado de pilotos</h3>
         <div class="card-tools">
-          <a href="/admin/socios/nuevo" class="btn btn-primary btn-sm">
+          <a href="/admin/pilotos/nuevo" class="btn btn-primary btn-sm">
             <i class="bi bi-plus-lg me-1"></i> Nuevo socio
           </a>
         </div>
@@ -27,7 +27,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for s in socios %}
+            {% for s in pilotos %}
             <tr>
               <td>{{ s.numero }}</td>
               <td>{{ s.nombre }}</td>
@@ -37,7 +37,7 @@
               <td>{{ acciones() }}</td>
             </tr>
             {% else %}
-            <tr><td colspan="6" class="text-center text-muted py-3">No hay socios cargados.</td></tr>
+            <tr><td colspan="6" class="text-center text-muted py-3">No hay pilotos cargados.</td></tr>
             {% endfor %}
           </tbody>
         </table>

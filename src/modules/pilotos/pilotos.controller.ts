@@ -3,32 +3,32 @@ import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../common/authorization';
 import { Role } from '../../common/types/role';
 import { ClubesService } from '../clubes/clubes.service';
-import { SociosService } from './socios.service';
+import { PilotosService } from './pilotos.service';
 
 /**
- * Padrón de socios (/admin/socios). Los permisos se declaran por operación.
+ * Padrón de pilotos (/admin/pilotos). Los permisos se declaran por operación.
  */
-@ApiTags('Socios')
-@Controller('admin/socios')
-export class SociosController {
+@ApiTags('Pilotos')
+@Controller('admin/pilotos')
+export class PilotosController {
   constructor(
-    private readonly socios: SociosService,
+    private readonly pilotos: PilotosService,
     private readonly clubes: ClubesService,
   ) {}
 
-  /** Listado de socios. */
+  /** Listado de pilotos. */
   @Roles(Role.cd)
   @Get()
-  @Render('socios/views/listado')
-  @ApiOperation({ summary: 'Padrón de socios', description: 'HTML con el listado. Rol: comisión directiva.' })
+  @Render('pilotos/views/listado')
+  @ApiOperation({ summary: 'Padrón de pilotos', description: 'HTML con el listado. Rol: comisión directiva.' })
   async listado() {
-    return { socios: await this.socios.listar() };
+    return { pilotos: await this.pilotos.listar() };
   }
 
   /** Formulario de alta (necesita la lista de clubes para el selector). */
   @Roles(Role.cd)
   @Get('nuevo')
-  @Render('socios/views/nuevo')
+  @Render('pilotos/views/nuevo')
   @ApiOperation({
     summary: 'Formulario de alta',
     description: 'HTML con el formulario y los clubes para el selector. Rol: comisión directiva.',
@@ -40,7 +40,7 @@ export class SociosController {
   /** Guarda el socio y vuelve al listado. */
   @Roles(Role.cd)
   @Post()
-  @Redirect('/admin/socios')
+  @Redirect('/admin/pilotos')
   @ApiOperation({ summary: 'Alta de socio' })
   @ApiBody({
     schema: {
@@ -60,14 +60,14 @@ export class SociosController {
   })
   @ApiResponse({ status: 302, description: 'Redirige al listado.' })
   async crear(@Body() dto: Record<string, string>) {
-    await this.socios.crear(dto);
+    await this.pilotos.crear(dto);
   }
 
   @Roles(Role.cd, Role.tesorero)
   @Get('cuotas')
-  @Render('socios/views/cuotas')
+  @Render('pilotos/views/cuotas')
   @ApiOperation({ summary: 'Estado de cuotas', description: 'HTML con las cuotas por socio y mes. Roles: comisión directiva y tesorero.' })
   async cuotas() {
-    return this.socios.cuotas();
+    return this.pilotos.cuotas();
   }
 }

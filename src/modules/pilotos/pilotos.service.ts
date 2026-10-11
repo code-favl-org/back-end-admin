@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 /** TODO: reemplazar los datos de ejemplo por la base. */
 @Injectable()
-export class SociosService {
-  /** Padrón de socios. */
+export class PilotosService {
+  /** Padrón de pilotos. */
   async listar() {
     return [
       { numero: '001', nombre: 'Juan Pérez', dni: '30.123.456', club: 'Club Cóndor', estado: 'Activo' },

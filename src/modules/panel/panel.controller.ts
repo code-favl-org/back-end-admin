@@ -23,10 +23,10 @@ export class PanelController {
     description: 'HTML con las tarjetas de números (hoy, datos de ejemplo).',
   })
   panel() {
-    // TODO: reemplazar por datos reales (servicios de socios, clubes, etc.)
+    // TODO: reemplazar por datos reales (servicios de pilotos, clubes, etc.)
     return {
       stats: [
-        { valor: 245, etiqueta: 'Socios activos', color: 'primary', icono: 'bi-people-fill' },
+        { valor: 245, etiqueta: 'Pilotos activos', color: 'primary', icono: 'bi-people-fill' },
         { valor: 18, etiqueta: 'Clubes', color: 'success', icono: 'bi-building' },
         { valor: 7, etiqueta: 'Eventos este mes', color: 'warning', icono: 'bi-calendar-event' },
         { valor: 3, etiqueta: 'Cuotas pendientes', color: 'danger', icono: 'bi-cash-coin' },

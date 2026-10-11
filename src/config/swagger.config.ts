@@ -33,7 +33,7 @@ export function setupSwagger(app: INestApplication) {
       .addTag('Autenticación', 'Login y logout. La sesión vive en cookies.')
       .addTag('Panel', 'Páginas de inicio, para cualquier usuario con sesión.')
       .addTag('Usuarios', 'Cuentas del backoffice. Rol: Admin.')
-      .addTag('Socios', 'Padrón de socios y cuotas. Roles: Comisión directiva y Tesorero.')
+      .addTag('Pilotos', 'Padrón de pilotos y cuotas. Roles: Comisión directiva y Tesorero.')
       .addTag('Clubes', 'Clubes. Rol: Club.')
       .addTag('Web · Portada', 'Textos de la portada del sitio. Rol: Editor.')
       .addTag('Web · Noticias', 'Noticias del sitio. Rol: Editor.')

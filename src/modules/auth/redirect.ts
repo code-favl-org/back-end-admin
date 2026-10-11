@@ -31,8 +31,8 @@ export function redirectAfterLogin(next: string | undefined, user: AuthUser): st
   const role = user.roles.find((candidate) => Object.prototype.hasOwnProperty.call(Role, candidate)) ?? Role.admin;
   const landingByRole: Record<Role, string> = {
     [Role.admin]: '/admin/panel',
-    [Role.cd]: '/admin/socios',
-    [Role.tesorero]: '/admin/socios/cuotas',
+    [Role.cd]: '/admin/pilotos',
+    [Role.tesorero]: '/admin/pilotos/cuotas',
     [Role.editor]: '/admin/web/noticias',
     [Role.club]: '/admin/clubes',
     [Role.piloto]: '/admin/piloto',
