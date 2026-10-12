@@ -2,45 +2,45 @@ import { Body, Controller, Get, Post, Redirect, Render } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../common/authorization';
 import { Role } from '../../common/types/role';
-import { ClubesService } from '../clubes/clubes.service';
-import { PilotosService } from './pilotos.service';
+import { FavlClubsService } from '../favl-clubs/favl-clubs.service';
+import { PilotosService } from './padron-pilotos.service';
 
 /**
- * Padrón de pilotos (/admin/pilotos). Los permisos se declaran por operación.
+ * Padrón y cuotas (/admin/favl-pilots). Los permisos se declaran por operación.
  */
 @ApiTags('Pilotos')
-@Controller('admin/pilotos')
-export class PilotosController {
+@Controller('admin/favl-pilots')
+export class PadronPilotosController {
   constructor(
     private readonly pilotos: PilotosService,
-    private readonly clubes: ClubesService,
+    private readonly clubes: FavlClubsService,
   ) {}
 
   /** Listado de pilotos. */
-  @Roles(Role.cd)
-  @Get()
-  @Render('pilotos/views/listado')
-  @ApiOperation({ summary: 'Padrón de pilotos', description: 'HTML con el listado. Rol: comisión directiva.' })
+  @Roles(Role.admin, Role.cd)
+  @Get('padron')
+  @Render('favl-pilots/views/padron-listado')
+  @ApiOperation({ summary: 'Padrón de pilotos', description: 'HTML con el listado. Roles: admin y comisión directiva.' })
   async listado() {
     return { pilotos: await this.pilotos.listar() };
   }
 
   /** Formulario de alta (necesita la lista de clubes para el selector). */
-  @Roles(Role.cd)
-  @Get('nuevo')
-  @Render('pilotos/views/nuevo')
+  @Roles(Role.admin, Role.cd)
+  @Get('padron/nuevo')
+  @Render('favl-pilots/views/padron-nuevo')
   @ApiOperation({
     summary: 'Formulario de alta',
-    description: 'HTML con el formulario y los clubes para el selector. Rol: comisión directiva.',
+    description: 'HTML con el formulario y los clubes para el selector. Roles: admin y comisión directiva.',
   })
   async nuevo() {
     return { clubes: await this.clubes.nombres() };
   }
 
   /** Guarda el socio y vuelve al listado. */
-  @Roles(Role.cd)
-  @Post()
-  @Redirect('/admin/pilotos')
+  @Roles(Role.admin, Role.cd)
+  @Post('padron')
+  @Redirect('/admin/favl-pilots/padron')
   @ApiOperation({ summary: 'Alta de socio' })
   @ApiBody({
     schema: {
@@ -63,9 +63,9 @@ export class PilotosController {
     await this.pilotos.crear(dto);
   }
 
-  @Roles(Role.cd, Role.tesorero)
+  @Roles(Role.admin, Role.cd, Role.tesorero)
   @Get('cuotas')
-  @Render('pilotos/views/cuotas')
+  @Render('favl-pilots/views/cuotas')
   @ApiOperation({ summary: 'Estado de cuotas', description: 'HTML con las cuotas por socio y mes. Roles: comisión directiva y tesorero.' })
   async cuotas() {
     return this.pilotos.cuotas();

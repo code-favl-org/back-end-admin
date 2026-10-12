@@ -6,7 +6,7 @@ import type { AppConfig } from './configuration';
 /**
  * Motor de vistas (Nunjucks). Rutas de búsqueda, desde la raíz del proyecto:
  *  - views/        -> layouts, partials, macros y errors (compartidas):  "layouts/base.njk"
- *  - src/modules/  -> vistas de cada módulo:                              "pilotos/views/listado"
+ *  - src/modules/  -> vistas de cada módulo:                              "favl-pilots/views/padron-listado"
  *
  * Como en app.zip, se leen desde `src/modules` (no desde `dist/`): hay que ejecutar
  * la app desde la raíz del proyecto.

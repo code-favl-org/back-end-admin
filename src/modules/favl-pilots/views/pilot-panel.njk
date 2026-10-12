@@ -1,0 +1,26 @@
+{% extends "layouts/base.njk" %}
+{% from "macros/ui.njk" import page_header %}
+
+{% block title %}Panel del piloto{% endblock %}
+
+{% block content %}
+{{ page_header('Panel del piloto', [{ label: 'Panel' }], false) }}
+<div class="app-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-xl-6 col-md-8">
+        <div class="card">
+          <div class="card-header"><h3 class="card-title">Mi perfil</h3></div>
+          <div class="card-body">
+            <p>Hola{% if piloto.firstName %}, {{ piloto.firstName }}{% endif %}. Desde acá podés administrar tus datos.</p>
+            <p class="text-body-secondary mb-3">Email de acceso: {{ email }}</p>
+            <a href="/admin/favl-pilots/perfil" class="btn btn-primary">
+              <i class="bi bi-person-vcard me-1"></i> Ver y editar mi perfil
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

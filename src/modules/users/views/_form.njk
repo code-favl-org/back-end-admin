@@ -6,7 +6,7 @@
              value="{{ usuario.usuario or '' }}" autocomplete="username" required>
     </div>
     <div class="col-md-6 mb-3">
-      <label for="email" class="form-label">Email *</label>
+      <label for="email" class="form-label">Email de acceso *</label>
       <input type="email" class="form-control" id="email" name="email" maxlength="254"
              value="{{ usuario.email or '' }}" autocomplete="email" required>
     </div>
@@ -21,10 +21,26 @@
     </div>
     <div class="col-md-6 mb-3">
       <label for="password" class="form-label">{{ 'Nueva contraseña' if editar else 'Contraseña *' }}</label>
-      <input type="password" class="form-control" id="password" name="password" minlength="8"
-             autocomplete="{{ 'new-password' if editar else 'new-password' }}" {% if not editar %}required{% endif %}>
+      <div class="input-group">
+        <input type="password" class="form-control" id="password" name="password" minlength="8"
+               autocomplete="new-password" {% if not editar %}required{% endif %}>
+        <button type="button" class="input-group-text" data-toggle-password="password" aria-label="Mostrar contraseña" aria-pressed="false">
+          <i class="bi bi-eye"></i>
+        </button>
+      </div>
       {% if editar %}<div class="form-text">Dejala vacía para conservar la contraseña actual.</div>{% else %}
       <div class="form-text">Debe tener al menos 8 caracteres.</div>{% endif %}
+    </div>
+    <div class="col-md-6 mb-3">
+      <label for="confirmarPassword" class="form-label">Confirmar contraseña{% if not editar %} *{% endif %}</label>
+      <div class="input-group">
+        <input type="password" class="form-control" id="confirmarPassword" name="confirmarPassword" minlength="8"
+               autocomplete="new-password" {% if not editar %}required{% endif %}>
+        <button type="button" class="input-group-text" data-toggle-password="confirmarPassword" aria-label="Mostrar confirmación de contraseña" aria-pressed="false">
+          <i class="bi bi-eye"></i>
+        </button>
+      </div>
+      {% if editar %}<div class="form-text">Completala solo si vas a cambiar la contraseña.</div>{% endif %}
     </div>
   </div>
   <div class="d-flex gap-2">
@@ -32,3 +48,16 @@
     <a href="/admin/usuarios" class="btn btn-outline-secondary">Cancelar</a>
   </div>
 </form>
+<script>
+  document.querySelectorAll('[data-toggle-password]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const input = document.getElementById(button.dataset.togglePassword);
+      const visible = input.type === 'password';
+      input.type = visible ? 'text' : 'password';
+      button.setAttribute('aria-pressed', String(visible));
+      button.setAttribute('aria-label', visible ? 'Ocultar contraseña' : 'Mostrar contraseña');
+      button.querySelector('i').classList.toggle('bi-eye', !visible);
+      button.querySelector('i').classList.toggle('bi-eye-slash', visible);
+    });
+  });
+</script>

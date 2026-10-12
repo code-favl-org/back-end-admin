@@ -56,12 +56,13 @@ export class UsersController {
   @ApiBody({
     schema: {
       type: 'object',
-      required: ['usuario', 'email', 'role', 'password'],
+      required: ['usuario', 'email', 'role', 'password', 'confirmarPassword'],
       properties: {
         usuario: { type: 'string', maxLength: 50, example: 'jperez' },
         email: { type: 'string', format: 'email', maxLength: 254, example: 'jperez@favl.org.ar' },
-        role: { type: 'string', description: 'Valor de {Role}: admin, editor, tesorero, cd, club o piloto.', example: 'editor' },
+        role: { type: 'string', enum: ['admin', 'editor', 'tesorero', 'cd'], example: 'editor' },
         password: { type: 'string', format: 'password', minLength: 8, example: 'contraseña123' },
+        confirmarPassword: { type: 'string', format: 'password', minLength: 8, example: 'contraseña123' },
       },
     },
   })
@@ -105,8 +106,9 @@ export class UsersController {
       properties: {
         usuario: { type: 'string', maxLength: 50, example: 'jperez' },
         email: { type: 'string', format: 'email', maxLength: 254, example: 'jperez@favl.org.ar' },
-        role: { type: 'string', description: 'Valor de {Role}: admin, editor, tesorero, cd, club o piloto.', example: 'editor' },
+        role: { type: 'string', enum: ['admin', 'editor', 'tesorero', 'cd'], example: 'editor' },
         password: { type: 'string', format: 'password', minLength: 8, description: 'Vacío = no cambiar la contraseña.' },
+        confirmarPassword: { type: 'string', format: 'password', minLength: 8, description: 'Debe coincidir si se cambia la contraseña.' },
       },
     },
   })

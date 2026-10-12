@@ -54,6 +54,7 @@ export class SessionMiddleware implements NestMiddleware {
 
       req.user = user;
       res.locals.user = user;
+      res.locals.profileImage = user ? await this.auth.profileImage(user) : undefined;
       next();
     } catch (err) {
       next(err);

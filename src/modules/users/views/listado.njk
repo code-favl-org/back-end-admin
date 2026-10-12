@@ -25,7 +25,7 @@
           <table class="table table-striped table-hover mb-0">
             <thead>
               <tr>
-                <th>Usuario</th><th>Email</th><th>Rol</th><th>Estado</th>
+                <th>Usuario</th><th>Email de acceso</th><th>Rol</th><th>Estado</th>
                 {% if puedeAdministrar %}<th class="text-end">Acciones</th>{% endif %}
               </tr>
             </thead>
@@ -33,7 +33,7 @@
               {% for usuario in usuarios %}
               <tr>
                 <td>{{ usuario.usuario }}</td>
-                <td>{{ usuario.email }}</td>
+                <td>{{ usuario.email or '—' }}</td>
                 <td>{{ usuario.role }}</td>
                 <td>{{ badge('Activo' if usuario.activo else 'Inactivo', 'success' if usuario.activo else 'secondary') }}</td>
                 {% if puedeAdministrar %}

@@ -14,7 +14,9 @@ import { IsNull, MoreThan, Not, Repository } from 'typeorm';
 import { AuthUser } from '../../common/types';
 import { AppConfig, InjectConfig } from '../../config';
 import { isRole, Role } from '../../common/types/role';
+import { FavlClub } from '../favl-clubs/entities/favl-club.entity';
 import { User } from '../users/entities/user.entity';
+import { UserProfile } from '../users/entities/user-profile.entity';
 import { AuthSession } from './entities/auth-session.entity';
 
 const MINUTE_MS = 60 * 1000;
@@ -56,6 +58,8 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
     @InjectRepository(AuthSession) private readonly sessions: Repository<AuthSession>,
+    @InjectRepository(FavlClub) private readonly clubs: Repository<FavlClub>,
+    @InjectRepository(UserProfile) private readonly profiles: Repository<UserProfile>,
     private readonly jwt: JwtService,
     @InjectConfig() private readonly config: AppConfig,
   ) {}
@@ -91,7 +95,7 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
    * @throws UnauthorizedException credenciales inválidas o usuario inactivo.
    * @throws ForbiddenException    el rol guardado no es uno de los roles válidos.
    */
-  async login(usuario: string, password: string): Promise<AuthTokens> {
+  async login(email: string, password: string): Promise<AuthTokens> {
     if (this.config.auth.devLoginBypass) {
       const now = new Date();
       const absoluteExpiresAt = new Date(now.getTime() + this.config.auth.absoluteSessionTtlMs);
@@ -101,12 +105,12 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
     const user = await this.users
       .createQueryBuilder('user')
       .addSelect('user.passwordHash')
-      .where('user.usuario = :usuario', { usuario: usuario ?? '' })
+      .where('user.email = :email', { email: email?.trim().toLowerCase() ?? '' })
       .andWhere('user.activo = :activo', { activo: true })
       .getOne();
 
-    if (!user || !password || !(await compare(password, user.passwordHash))) {
-      throw new UnauthorizedException('Usuario o contraseña inválidos.');
+    if (!user || !user.email || !password || !(await compare(password, user.passwordHash))) {
+      throw new UnauthorizedException('Email o contraseña inválidos.');
     }
     if (!isRole(user.role)) {
       throw new ForbiddenException('Tu usuario no tiene acceso al backoffice.');
@@ -232,6 +236,22 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
     };
   }
 
+  async profileImage(user: AuthUser): Promise<string | undefined> {
+    if (user.roles.includes(Role.club)) {
+      const club = await this.clubs.findOne({
+        select: ['logo'],
+        where: { userId: user.id },
+      });
+      return club?.logo && club.logo !== 'no.jpg' ? club.logo : undefined;
+    }
+
+    const profile = await this.profiles.findOne({
+      select: ['photo'],
+      where: { userId: user.id },
+    });
+    return profile?.photo || undefined;
+  }
+
   /** Revoca la sesión a la que pertenecen los tokens (si existe). */
   async logout(accessToken?: string, refreshToken?: string): Promise<void> {
     const where = [
@@ -285,6 +305,7 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
     absoluteExpiresAt: Date,
   ): Promise<AuthTokens> {
     if (!isRole(user.role)) throw new Error(`Rol persistido inválido: ${user.role}`);
+    if (!user.email) throw new UnauthorizedException('La cuenta no tiene un email de acceso configurado.');
 
     const now = Date.now();
     const accessExpiresAt = this.expiryAfter(this.config.auth.accessTokenTtlMs, absoluteExpiresAt);

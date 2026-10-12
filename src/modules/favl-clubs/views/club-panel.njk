@@ -1,0 +1,26 @@
+{% extends "layouts/base.njk" %}
+{% from "macros/ui.njk" import page_header %}
+
+{% block title %}Panel del club{% endblock %}
+
+{% block content %}
+{{ page_header('Panel del club', [{ label: 'Panel' }], false) }}
+<div class="app-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-xl-6 col-md-8">
+        <div class="card">
+          <div class="card-header"><h3 class="card-title">Mi club</h3></div>
+          <div class="card-body">
+            <p>Hola{% if club.name %}, {{ club.name }}{% endif %}. Desde acá podés administrar los datos de tu club.</p>
+            <p class="text-body-secondary mb-3">Email de acceso: {{ email }}</p>
+            <a href="/admin/favl-clubs/perfil" class="btn btn-primary">
+              <i class="bi bi-building me-1"></i> Ver y editar el perfil del club
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

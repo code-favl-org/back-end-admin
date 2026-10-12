@@ -1,0 +1,96 @@
+{% extends "layouts/base.njk" %}
+{% from "macros/ui.njk" import page_header %}
+
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+{{ page_header(titulo, [{ label: titulo, href: basePath }, { label: 'Formulario' }]) }}
+<div class="app-content"><div class="container-fluid"><div class="card">
+  <div class="card-header"><h3 class="card-title">{{ titulo }}</h3></div>
+  <div class="card-body">
+    {% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
+    <form method="post" action="{{ action }}" enctype="multipart/form-data">
+      {% if not creating %}
+      <div class="mb-3"><label class="form-label">ID</label><input type="text" class="form-control" value="{{ registro.id }}" disabled></div>
+      {% endif %}
+      <div class="row">
+        <div class="col-md-6 mb-3"><label for="document" class="form-label">Documento</label><input type="text" class="form-control" id="document" name="document" maxlength="20" value="{{ registro.document or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="documentType" class="form-label">Tipo de documento</label><select class="form-select" id="documentType" name="documentType"><option value="">Seleccionar…</option><option value="dni" {% if registro.documentType == 'dni' %}selected{% endif %}>DNI</option><option value="pasaporte" {% if registro.documentType == 'pasaporte' %}selected{% endif %}>Pasaporte</option></select></div>
+        <div class="col-md-6 mb-3"><label for="lastName" class="form-label">Apellido</label><input type="text" class="form-control" id="lastName" name="lastName" maxlength="50" value="{{ registro.lastName or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="firstName" class="form-label">Nombre</label><input type="text" class="form-control" id="firstName" name="firstName" maxlength="50" value="{{ registro.firstName or '' }}"></div>
+        <div class="col-md-6 mb-3">
+          <label for="photo" class="form-label">Foto {% if creating %}*{% endif %}</label>
+          <input type="file" class="form-control" id="photo" name="photo" accept="image/png,image/jpeg,image/webp,image/gif" {% if creating %}required{% endif %}>
+          <div class="form-text">
+            {% if registro.photo %}Dejá vacío para conservar la foto actual. {% endif %}PNG, JPG, WEBP o GIF, máx. 2 MB.
+          </div>
+          <canvas id="photo-preview" class="border rounded mt-2 w-100" width="480" height="320"
+            data-image-url="{{ registro.photo or '' }}" role="img" aria-label="Vista previa de la foto del piloto"></canvas>
+          <div id="photo-preview-error" class="form-text text-danger" hidden>No se pudo cargar la vista previa de la imagen.</div>
+        </div>
+        <div class="col-md-6 mb-3"><label for="address" class="form-label">Dirección</label><input type="text" class="form-control" id="address" name="address" maxlength="100" value="{{ registro.address or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="city" class="form-label">Ciudad</label><input type="text" class="form-control" id="city" name="city" maxlength="100" value="{{ registro.city or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="state" class="form-label">Provincia</label><input type="text" class="form-control" id="state" name="state" maxlength="50" value="{{ registro.state or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="postalCode" class="form-label">Código postal</label><input type="text" class="form-control" id="postalCode" name="postalCode" maxlength="10" value="{{ registro.postalCode or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="country" class="form-label">País</label><input type="text" class="form-control" id="country" name="country" maxlength="2" value="{{ registro.country or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="birthDate" class="form-label">Fecha de nacimiento</label><input type="date" class="form-control" id="birthDate" name="birthDate" value="{{ registro.birthDate or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="email" class="form-label">Email para iniciar sesión *</label><input type="email" class="form-control" id="email" name="email" maxlength="254" value="{{ registro.email or '' }}" required></div>
+        <div class="col-md-6 mb-3"><label for="emailPrivate" class="form-label">Email privado</label><select class="form-select" id="emailPrivate" name="emailPrivate"><option value="">Seleccionar…</option><option value="0" {% if (registro.emailPrivate ~ '') == '0' %}selected{% endif %}>No</option><option value="1" {% if (registro.emailPrivate ~ '') == '1' %}selected{% endif %}>Sí</option></select></div>
+        <div class="col-md-6 mb-3"><label for="phonePrivate" class="form-label">Teléfono privado</label><select class="form-select" id="phonePrivate" name="phonePrivate"><option value="">Seleccionar…</option><option value="0" {% if (registro.phonePrivate ~ '') == '0' %}selected{% endif %}>No</option><option value="1" {% if (registro.phonePrivate ~ '') == '1' %}selected{% endif %}>Sí</option></select></div>
+        <div class="col-md-6 mb-3"><label for="phone" class="form-label">Teléfono</label><input type="text" class="form-control" id="phone" name="phone" maxlength="20" value="{{ registro.phone or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="mobilePhone" class="form-label">Celular</label><input type="text" class="form-control" id="mobilePhone" name="mobilePhone" maxlength="20" value="{{ registro.mobilePhone or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="emergencyContactPrivate" class="form-label">Contacto de emergencia privado *</label><select class="form-select" id="emergencyContactPrivate" name="emergencyContactPrivate" required><option value="">Seleccionar…</option><option value="0" {% if (registro.emergencyContactPrivate ~ '') == '0' %}selected{% endif %}>No</option><option value="1" {% if (registro.emergencyContactPrivate ~ '') == '1' %}selected{% endif %}>Sí</option></select></div>
+        <div class="col-md-6 mb-3"><label for="emergencyContactName" class="form-label">Nombre del contacto de emergencia *</label><input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" maxlength="80" value="{{ registro.emergencyContactName or '' }}" required></div>
+        <div class="col-md-6 mb-3"><label for="emergencyContactPhone" class="form-label">Teléfono del contacto de emergencia *</label><input type="text" class="form-control" id="emergencyContactPhone" name="emergencyContactPhone" maxlength="20" value="{{ registro.emergencyContactPhone or '' }}" required></div>
+        <div class="col-md-6 mb-3"><label for="whatsapp" class="form-label">WhatsApp</label><select class="form-select" id="whatsapp" name="whatsapp"><option value="">Seleccionar…</option><option value="0" {% if (registro.whatsapp ~ '') == '0' %}selected{% endif %}>No</option><option value="1" {% if (registro.whatsapp ~ '') == '1' %}selected{% endif %}>Sí</option></select></div>
+        <div class="col-md-6 mb-3"><label for="gender" class="form-label">Género</label><input type="text" class="form-control" id="gender" name="gender" maxlength="2" value="{{ registro.gender or '' }}"></div>
+        {% if not hideTerms %}<div class="col-md-6 mb-3"><label for="termsAndConditionsAccepted" class="form-label">Aceptó términos y condiciones</label><input type="text" class="form-control" id="termsAndConditionsAccepted" name="termsAndConditionsAccepted" maxlength="2" value="{{ registro.termsAndConditionsAccepted or '' }}"></div>{% endif %}
+      </div>
+      <div class="d-flex gap-2"><button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Guardar</button><a href="{{ basePath }}" class="btn btn-outline-secondary">Cancelar</a></div>
+    </form>
+  </div>
+</div></div></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (() => {
+    const input = document.getElementById('photo');
+    const canvas = document.getElementById('photo-preview');
+    const error = document.getElementById('photo-preview-error');
+    const context = canvas.getContext('2d');
+    let previewUrl;
+
+    function draw(image) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      const scale = Math.min(canvas.width / image.width, canvas.height / image.height);
+      const width = image.width * scale;
+      const height = image.height * scale;
+      context.drawImage(image, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+      error.hidden = true;
+    }
+
+    function showImage(url) {
+      const image = new Image();
+      image.onload = () => draw(image);
+      image.onerror = () => { error.hidden = false; };
+      image.src = url;
+    }
+
+    input.addEventListener('change', () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      const file = input.files[0];
+      if (file) {
+        previewUrl = URL.createObjectURL(file);
+        showImage(previewUrl);
+      } else if (canvas.dataset.imageUrl) {
+        showImage(canvas.dataset.imageUrl);
+      } else {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        error.hidden = true;
+      }
+    });
+
+    if (canvas.dataset.imageUrl) showImage(canvas.dataset.imageUrl);
+  })();
+</script>
+{% endblock %}

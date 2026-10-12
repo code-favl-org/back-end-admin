@@ -14,8 +14,8 @@ export class User {
   @Column({ type: 'varchar', length: 50, unique: true })
   usuario: string;
 
-  @Column({ type: 'varchar', length: 254, unique: true })
-  email: string;
+  @Column({ type: 'varchar', length: 254, unique: true, nullable: true })
+  email: string | null;
 
   @Column({
     name: 'password_hash',
@@ -24,6 +24,15 @@ export class User {
     select: false,
   })
   passwordHash: string;
+
+  @Column({
+    name: 'pass_txt',
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+    select: false,
+  })
+  passTxt: string | null;
 
   @Column({
     type: 'enum',

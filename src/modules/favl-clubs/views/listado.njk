@@ -1,0 +1,40 @@
+{% extends "layouts/base.njk" %}
+{% from "macros/ui.njk" import page_header, badge %}
+
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+{{ page_header(titulo, [{ label: titulo }]) }}
+<div class="app-content">
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">{{ titulo }}</h3>
+        <a href="{{ basePath }}/nuevo" class="btn btn-primary btn-sm">Nuevo club</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0">
+          <thead><tr><th>ID</th><th>Nombre corto</th><th>Nombre completo</th><th>Ciudad</th><th>Provincia</th><th>Estado</th><th class="text-end">Acciones</th></tr></thead>
+          <tbody>
+            {% for club in registros %}
+            <tr>
+              <td>{{ club.id }}</td><td>{{ club.name or '—' }}</td><td>{{ club.fullName or '—' }}</td><td>{{ club.city or '—' }}</td><td>{{ club.state or '—' }}</td>
+              <td>{{ badge('Inactivo' if club.active == '0' else 'Activo', 'secondary' if club.active == '0' else 'success') }}</td>
+              <td><div class="d-flex justify-content-end gap-1">
+                <a href="{{ basePath }}/{{ club.id }}/editar" class="btn btn-sm btn-outline-primary" title="Editar"><i class="bi bi-pencil"></i></a>
+                {% if club.active == '0' %}
+                <form method="post" action="{{ basePath }}/{{ club.id }}/activar"><button type="submit" class="btn btn-sm btn-outline-success" title="Reactivar"><i class="bi bi-check-lg"></i></button></form>
+                {% else %}
+                <form method="post" action="{{ basePath }}/{{ club.id }}/desactivar" onsubmit="return confirm('¿Dar de baja este registro?');"><button type="submit" class="btn btn-sm btn-outline-danger" title="Dar de baja"><i class="bi bi-person-x"></i></button></form>
+                {% endif %}
+              </div></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" class="text-center text-muted py-3">No hay clubes cargados.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

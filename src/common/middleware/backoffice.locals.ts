@@ -11,6 +11,15 @@ const MENU_TEMPLATE_BY_ROLE: Record<Role, string> = {
   club: 'partials/menus/menuClub.njk',
 };
 
+const PROFILE_PATH_BY_ROLE: Record<Role, string> = {
+  admin: '/admin/perfil',
+  piloto: '/admin/favl-pilots/perfil',
+  cd: '/admin/perfil',
+  editor: '/admin/perfil',
+  tesorero: '/admin/perfil',
+  club: '/admin/favl-clubs/perfil',
+};
+
 /** ¿La URL pertenece al backoffice (/admin, /admin/...)? */
 export function isBackofficePath(url: string): boolean {
   return /^\/admin(\/|\?|$)/.test(url);
@@ -34,6 +43,7 @@ export function backofficeLocals(req: Request, res: Response, next: NextFunction
   res.locals.year = new Date().getFullYear();
   const role = req.user?.roles[0];
   res.locals.menuTemplate = role ? MENU_TEMPLATE_BY_ROLE[role] : undefined;
+  res.locals.profilePath = req.user?.id && role ? PROFILE_PATH_BY_ROLE[role] : undefined;
   res.locals.isMenuActive = (href: string, includeDescendants = false) =>
     path === href || (includeDescendants && path.startsWith(`${href}/`));
   res.locals.roleLabel = req.user?.roles.map((r) => ROLE_LABELS[r] ?? r).join(', ') ?? '';

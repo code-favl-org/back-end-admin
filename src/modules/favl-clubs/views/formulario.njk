@@ -1,0 +1,89 @@
+{% extends "layouts/base.njk" %}
+{% from "macros/ui.njk" import page_header %}
+
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+{{ page_header(titulo, [{ label: titulo, href: basePath }, { label: 'Formulario' }]) }}
+<div class="app-content"><div class="container-fluid"><div class="card">
+  <div class="card-header"><h3 class="card-title">{{ titulo }}</h3></div>
+  <div class="card-body">
+    {% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
+    <form method="post" action="{{ action }}" enctype="multipart/form-data">
+      {% if not creating %}
+      <div class="mb-3"><label class="form-label">ID</label><input type="text" class="form-control" value="{{ registro.id }}" disabled></div>
+      {% endif %}
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="logo" class="form-label">Logo</label>
+          <input type="file" class="form-control" id="logo" name="logo" accept="image/png,image/jpeg,image/webp,image/gif">
+          <div class="form-text">
+            {% if registro.logo %}Dejá vacío para conservar el logo actual. {% endif %}PNG, JPG, WEBP o GIF, máx. 2 MB.
+          </div>
+          <canvas id="logo-preview" class="border rounded mt-2 w-100" width="480" height="320"
+            data-image-url="{{ registro.logo or '' }}" role="img" aria-label="Vista previa del logo del club"></canvas>
+          <div id="logo-preview-error" class="form-text text-danger" hidden>No se pudo cargar la vista previa de la imagen.</div>
+        </div>
+        <div class="col-md-6 mb-3"><label for="name" class="form-label">Nombre corto</label><input type="text" class="form-control" id="name" name="name" maxlength="20" value="{{ registro.name or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="fullName" class="form-label">Nombre completo</label><input type="text" class="form-control" id="fullName" name="fullName" maxlength="150" value="{{ registro.fullName or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="taxId" class="form-label">CUIT</label><input type="text" class="form-control" id="taxId" name="taxId" maxlength="11" value="{{ registro.taxId or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="email" class="form-label">Email para iniciar sesión *</label><input type="email" class="form-control" id="email" name="email" maxlength="254" value="{{ registro.email or '' }}" required></div>
+        <div class="col-md-6 mb-3"><label for="website" class="form-label">Sitio web</label><input type="text" class="form-control" id="website" name="website" maxlength="100" value="{{ registro.website or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="address" class="form-label">Dirección</label><input type="text" class="form-control" id="address" name="address" maxlength="100" value="{{ registro.address or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="city" class="form-label">Ciudad</label><input type="text" class="form-control" id="city" name="city" maxlength="100" value="{{ registro.city or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="state" class="form-label">Provincia</label><input type="text" class="form-control" id="state" name="state" maxlength="50" value="{{ registro.state or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="latitude" class="form-label">Latitud</label><input type="number" class="form-control" id="latitude" name="latitude" step="0.00000001" value="{{ registro.latitude or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="longitude" class="form-label">Longitud</label><input type="number" class="form-control" id="longitude" name="longitude" step="0.00000001" value="{{ registro.longitude or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="legalId" class="form-label">Identificación legal</label><input type="text" class="form-control" id="legalId" name="legalId" maxlength="85" value="{{ registro.legalId or '' }}"></div>
+        <div class="col-md-6 mb-3"><label for="legalStatus" class="form-label">Estado legal</label><input type="text" class="form-control" id="legalStatus" name="legalStatus" maxlength="20" value="{{ registro.legalStatus or '' }}"></div>
+        <div class="col-12 mb-3"><label for="status" class="form-label">Estado institucional *</label><textarea class="form-control" id="status" name="status" required>{{ registro.status or '' }}</textarea></div>
+        <div class="col-md-6 mb-3"><label for="comments" class="form-label">Comentarios *</label><input type="text" class="form-control" id="comments" name="comments" maxlength="250" value="{{ registro.comments or '' }}" required></div>
+      </div>
+      <div class="d-flex gap-2"><button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Guardar</button><a href="{{ basePath }}" class="btn btn-outline-secondary">Cancelar</a></div>
+    </form>
+  </div>
+</div></div></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (() => {
+    const input = document.getElementById('logo');
+    const canvas = document.getElementById('logo-preview');
+    const error = document.getElementById('logo-preview-error');
+    const context = canvas.getContext('2d');
+    let previewUrl;
+
+    function draw(image) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      const scale = Math.min(canvas.width / image.width, canvas.height / image.height);
+      const width = image.width * scale;
+      const height = image.height * scale;
+      context.drawImage(image, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+      error.hidden = true;
+    }
+
+    function showImage(url) {
+      const image = new Image();
+      image.onload = () => draw(image);
+      image.onerror = () => { error.hidden = false; };
+      image.src = url;
+    }
+
+    input.addEventListener('change', () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      const file = input.files[0];
+      if (file) {
+        previewUrl = URL.createObjectURL(file);
+        showImage(previewUrl);
+      } else if (canvas.dataset.imageUrl) {
+        showImage(canvas.dataset.imageUrl);
+      } else {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        error.hidden = true;
+      }
+    });
+
+    if (canvas.dataset.imageUrl) showImage(canvas.dataset.imageUrl);
+  })();
+</script>
+{% endblock %}

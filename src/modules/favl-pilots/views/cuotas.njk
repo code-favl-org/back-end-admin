@@ -5,7 +5,7 @@
 {% block title %}Cuotas{% endblock %}
 
 {% block content %}
-{{ page_header('Cuotas', [{ label: 'Pilotos' }, { label: 'Cuotas' }]) }}
+{{ page_header('Cuotas', [{ label: 'Pilotos', href: '/admin/favl-pilots/padron' }, { label: 'Cuotas' }]) }}
 
 {% set colores = { 'Pagada': 'success', 'Impaga': 'danger', 'Pendiente': 'warning' } %}
 

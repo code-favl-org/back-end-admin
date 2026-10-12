@@ -1,11 +1,11 @@
-{# Listado de pilotos. Recibe: pilotos[{numero, nombre, dni, club, estado}]. #}
+{# Padrón de pilotos. Recibe: pilotos[{numero, nombre, dni, club, estado}]. #}
 {% extends "layouts/base.njk" %}
 {% from "macros/ui.njk" import page_header, badge, acciones %}
 
-{% block title %}Pilotos{% endblock %}
+{% block title %}Padrón de pilotos{% endblock %}
 
 {% block content %}
-{{ page_header('Pilotos', [{ label: 'Pilotos' }, { label: 'Listado' }]) }}
+{{ page_header('Padrón de pilotos', [{ label: 'Pilotos' }, { label: 'Listado' }]) }}
 
 <div class="app-content">
   <div class="container-fluid">
@@ -13,7 +13,7 @@
       <div class="card-header">
         <h3 class="card-title">Listado de pilotos</h3>
         <div class="card-tools">
-          <a href="/admin/pilotos/nuevo" class="btn btn-primary btn-sm">
+          <a href="/admin/favl-pilots/padron/nuevo" class="btn btn-primary btn-sm">
             <i class="bi bi-plus-lg me-1"></i> Nuevo socio
           </a>
         </div>

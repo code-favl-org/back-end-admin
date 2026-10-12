@@ -9,6 +9,16 @@ Backend NestJS (API + backoffice con Nunjucks) y sitio público en React (`front
 Para servir todo desde un solo puerto (como en producción): `npm run build:all` y `npm run start:prod`;
 el sitio queda en http://localhost:3000/.
 
+### Perfiles de usuario
+
+Los datos personales compartidos (nombre, apellido, foto, contacto) viven en `user_profiles`,
+una fila por cuenta, para que cualquier rol los tenga sin repetirlos en su tabla. El código crea
+la fila vacía al primer acceso, así que no hace falta migrar nada. `sql/20261012_user_profiles.sql`
+solo adelanta esa creación para todas las cuentas y es idempotente.
+
+`favl_pilots` conserva lo propio del padrón: documento, datos aeronáuticos, contacto de emergencia
+y preferencias de privacidad. El logo sigue en `favl_clubs`, porque identifica a la organización.
+
 | Qué            | URL                                   | Acceso                         |
 | -------------- | ------------------------------------- | ------------------------------ |
 | Sitio público  | http://localhost:3000/ (dev: :5173)   | Anónimo (recibe cookie de visitante) |

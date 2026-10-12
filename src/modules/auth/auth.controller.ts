@@ -69,7 +69,7 @@ export class AuthController {
    *
    * @param req Petición HTTP en la que se asociarán las cookies de sesión.
    * @param res Respuesta usada para escribir cookies, renderizar o redirigir.
-   * @param body Campos enviados por el formulario: `usuario`, `password` y `next`.
+   * @param body Campos enviados por el formulario: `email`, `password` y `next`.
    */
   @Public()
   @Post('login')
@@ -82,9 +82,9 @@ export class AuthController {
   @ApiBody({
     schema: {
       type: 'object',
-      required: ['usuario', 'password'],
+      required: ['email', 'password'],
       properties: {
-        usuario: { type: 'string', example: 'admin' },
+        email: { type: 'string', format: 'email', example: 'admin@favl.org.ar' },
         password: { type: 'string', format: 'password', example: 'contraseña' },
         next: { type: 'string', description: 'Ruta interna a la que volver (opcional).', example: '/admin/panel' },
       },
@@ -96,11 +96,11 @@ export class AuthController {
   async login(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() body: { usuario?: string; password?: string; next?: string },
+    @Body() body: { email?: string; password?: string; next?: string },
   ) {
     try {
       // El servicio decide el método de autenticación (incluido el bypass local, si está habilitado).
-      const tokens = await this.auth.login(body.usuario ?? '', body.password ?? '');
+      const tokens = await this.auth.login(body.email ?? '', body.password ?? '');
       // El navegador recibirá los tokens como cookies y podrá enviarlos en pedidos siguientes.
       this.sessions.start(req, res, tokens);
       return res.redirect(redirectAfterLogin(body.next, tokens.user));
@@ -110,7 +110,7 @@ export class AuthController {
       if (!(error instanceof UnauthorizedException || error instanceof ForbiddenException)) throw error;
       return res.status(error.getStatus()).render(LOGIN_VIEW, {
         next: safeNext(body.next) ?? '',
-        usuario: body.usuario,
+        email: body.email,
         error: error.message,
       });
     }

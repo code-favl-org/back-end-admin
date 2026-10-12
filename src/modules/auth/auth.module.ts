@@ -2,7 +2,10 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_CONFIG, AppConfig } from '../../config';
+import { FavlClub } from '../favl-clubs/entities/favl-club.entity';
+import { FavlPilot } from '../favl-pilots/entities/favl-pilot.entity';
 import { User } from '../users/entities/user.entity';
+import { UserProfile } from '../users/entities/user-profile.entity';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AuthSession } from './entities/auth-session.entity';
@@ -12,7 +15,7 @@ import { SessionService } from './session.service';
 /** Login, logout, sesiones en base (JWT access + refresh) y middleware que completa `req.user`. */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, AuthSession]),
+    TypeOrmModule.forFeature([User, AuthSession, FavlClub, UserProfile]),
     // Mismos parámetros que back-end-public: así los tokens de uno valen en el otro.
     JwtModule.registerAsync({
       inject: [APP_CONFIG],

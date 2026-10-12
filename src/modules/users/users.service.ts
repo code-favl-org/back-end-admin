@@ -1,9 +1,10 @@
 import { ConflictException, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { hash } from 'bcryptjs';
-import { QueryFailedError, Repository } from 'typeorm';
+import { In, Not, QueryFailedError, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isRole, ROLE_LABELS, Role } from '../../common/types/role';
 import { User } from './entities/user.entity';
+import { UserProfile } from './entities/user-profile.entity';
 
 const PASSWORD_MIN_LENGTH = 8;
 
@@ -19,19 +20,26 @@ export class UsersService {
   constructor(@InjectRepository(User) private readonly users: Repository<User>) {}
 
   roles(): Array<{ value: Role; label: string }> {
-    return Object.values(Role).map((role) => ({
-      value: role,
-      label: ROLE_LABELS[role],
-    }));
+    return Object.values(Role)
+      // .filter((role) => role !== Role.club && role !== Role.piloto)
+      .map((role) => ({
+        value: role,
+        label: ROLE_LABELS[role],
+      }));
   }
 
   async listar(): Promise<User[]> {
-    return this.users.find({ order: { activo: 'DESC', usuario: 'ASC' } });
+    return this.users.find({
+      where: { role: Not(In([Role.club, Role.piloto])) },
+      order: { activo: 'DESC', usuario: 'ASC' },
+    });
   }
 
   async obtener(id: number): Promise<User> {
     const user = await this.users.findOne({ where: { id } });
-    if (!user) throw new NotFoundException('No se encontró el usuario.');
+    if (!user || user.role === Role.club || user.role === Role.piloto) {
+      throw new NotFoundException('No se encontró el usuario administrable desde esta pantalla.');
+    }
     return user;
   }
 
@@ -45,13 +53,22 @@ export class UsersService {
       activo: true,
     });
 
-    await this.save(user);
+    try {
+      await this.users.manager.transaction(async (manager) => {
+        const savedUser = await manager.getRepository(User).save(user);
+        await manager.getRepository(UserProfile).save({ userId: savedUser.id });
+      });
+    } catch (error) {
+      if (this.esUsuarioDuplicado(error)) {
+        throw new ConflictException('Ese nombre de usuario o email ya está registrado.');
+      }
+      throw error;
+    }
   }
 
   async actualizar(id: number, input: Record<string, unknown>): Promise<void> {
     const user = await this.obtener(id);
     const data = this.validar(input, false);
-
     user.usuario = data.usuario;
     user.email = data.email;
     user.role = data.role;
@@ -84,6 +101,7 @@ export class UsersService {
     const email = this.texto(input.email, 'El email es obligatorio.').trim().toLowerCase();
     const roleValue = this.texto(input.role, 'Seleccioná un rol válido.').trim();
     const password = typeof input.password === 'string' ? input.password : '';
+    const confirmarPassword = typeof input.confirmarPassword === 'string' ? input.confirmarPassword : '';
 
     if (!usuario || usuario.length > 50) {
       throw new BadRequestException('El nombre de usuario debe tener entre 1 y 50 caracteres.');
@@ -94,9 +112,18 @@ export class UsersService {
     if (!isRole(roleValue)) {
       throw new BadRequestException('El rol seleccionado no es válido para el backoffice.');
     }
+    if (roleValue === Role.club || roleValue === Role.piloto) {
+      throw new BadRequestException('Los usuarios de clubes y pilotos se crean desde sus respectivos formularios.');
+    }
     const role = Role[roleValue];
     if ((requierePassword || password.length > 0) && password.length < PASSWORD_MIN_LENGTH) {
       throw new BadRequestException(`La contraseña debe tener al menos ${PASSWORD_MIN_LENGTH} caracteres.`);
+    }
+    if ((requierePassword || password.length > 0) && password !== confirmarPassword) {
+      throw new BadRequestException('La contraseña y su confirmación no coinciden.');
+    }
+    if (!requierePassword && password.length === 0 && confirmarPassword.length > 0) {
+      throw new BadRequestException('Ingresá una contraseña para confirmar el cambio.');
     }
 
     return { usuario, email, role, ...(password ? { password } : {}) };

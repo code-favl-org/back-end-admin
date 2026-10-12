@@ -8,13 +8,14 @@ import { AppConfigModule } from './config';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BannersModule } from './modules/banners/banners.module';
-import { ClubesModule } from './modules/clubes/clubes.module';
+import { FavlClubsModule } from './modules/favl-clubs/favl-clubs.module';
+import { FavlPilotsModule } from './modules/favl-pilots/favl-pilots.module';
+import { FavlSchoolsModule } from './modules/favl-schools/favl-schools.module';
 import { InicioModule } from './modules/inicio/inicio.module';
 import { NoticiasModule } from './modules/noticias/noticias.module';
 import { PaginasModule } from './modules/paginas/paginas.module';
 import { PanelModule } from './modules/panel/panel.module';
 import { SessionMiddleware } from './modules/auth/session.middleware';
-import { PilotosModule } from './modules/pilotos/pilotos.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -23,10 +24,11 @@ import { UsersModule } from './modules/users/users.module';
     DatabaseModule,
     AuthModule,
     PanelModule,
-    PilotosModule,
-    ClubesModule,
     NoticiasModule,
     BannersModule,
+    FavlClubsModule,
+    FavlPilotsModule,
+    FavlSchoolsModule,
     PaginasModule,
     InicioModule,
     UsersModule,
@@ -42,6 +44,8 @@ import { UsersModule } from './modules/users/users.module';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     // Primero se identifica al usuario (req.user), después se arman las variables de las vistas.
-    consumer.apply(SessionMiddleware, backofficeLocals).forRoutes('admin', 'admin/{*splat}');
+    consumer
+      .apply(SessionMiddleware, backofficeLocals)
+      .forRoutes('admin', 'admin/{*splat}');
   }
 }
