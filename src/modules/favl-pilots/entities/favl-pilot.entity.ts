@@ -2,9 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from '../../users/entities/user.entity';
 
 @Entity({ name: 'favl_pilots' })
 export class FavlPilot {
@@ -51,10 +54,10 @@ export class FavlPilot {
   @Column({ type: 'char', length: 1, nullable: true, default: '1' })
   status: string | null;
 
-  @UpdateDateColumn({
+  @Column({
     type: 'timestamp',
+    precision: 3,
     default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
   })
   datein: Date;
 
@@ -69,6 +72,7 @@ export class FavlPilot {
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',
+    precision: 3,
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
@@ -76,8 +80,13 @@ export class FavlPilot {
   @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamp',
+    precision: 3,
     default: () => 'CURRENT_TIMESTAMP',
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
+
+  @OneToOne(() => User, { onDelete: 'RESTRICT' })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

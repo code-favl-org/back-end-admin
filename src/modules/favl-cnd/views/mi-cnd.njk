@@ -1,0 +1,23 @@
+{% extends "layouts/base.njk" %}
+{% from "macros/ui.njk" import page_header %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+{{ page_header(titulo, [{ label: titulo }]) }}
+<div class="app-content">
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Copa Nacional de Distancia</h3></div>
+      <div class="card-body">
+        <p class="mb-3">Esta sección todavía es un <strong>mockup</strong>: los datos reales van a llegar desde la API externa de la CND.</p>
+        <ul class="list-unstyled mb-0">
+          <li><span class="text-body-secondary">API consultada:</span> {{ api.url }}</li>
+          <li><span class="text-body-secondary">Estado:</span> {{ 'conectada' if api.ok else 'sin conexión' }}{% if api.status %} (HTTP {{ api.status }}){% endif %}</li>
+          <li><span class="text-body-secondary">Detalle:</span> {{ api.detalle }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

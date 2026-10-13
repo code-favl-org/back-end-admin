@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { CurrentUser } from '../../common/decorators';
-import { Roles } from '../../common/authorization';
+import { StrictRoles } from '../../common/authorization';
 import { FavlFormValidationFilter } from '../../common/filters/favl-form-validation.filter';
 import type { AuthUser } from '../../common/types';
 import { Role } from '../../common/types/role';
@@ -30,7 +30,7 @@ const CLUB_LOGO = imageUploads('img/club');
 
 @ApiTags('Portal del club')
 @Controller(BASE_PATH)
-@Roles(Role.club)
+@StrictRoles(Role.club)
 @UsePipes(new ValidationPipe({
   transform: true,
   whitelist: true,

@@ -13,8 +13,13 @@ el sitio queda en http://localhost:3000/.
 
 Los datos personales compartidos (nombre, apellido, foto, contacto) viven en `user_profiles`,
 una fila por cuenta, para que cualquier rol los tenga sin repetirlos en su tabla. El código crea
-la fila vacía al primer acceso, así que no hace falta migrar nada. `sql/20261012_user_profiles.sql`
-solo adelanta esa creación para todas las cuentas y es idempotente.
+la fila vacía al primer acceso, así que no hace falta migrar nada.
+
+[`sql/20261012_user_profiles.sql`](./sql/20261012_user_profiles.sql) hace el traslado completo de
+una base que todavía tenga los datos personales en `favl_pilots`: crea la tabla, asegura una fila
+por cuenta, copia esos datos al perfil y recién después quita las columnas del piloto. Decide solo
+si hay algo que copiar, así que es seguro ejecutarlo en cualquier momento, más de una vez y en
+cualquier orden.
 
 `favl_pilots` conserva lo propio del padrón: documento, datos aeronáuticos, contacto de emergencia
 y preferencias de privacidad. El logo sigue en `favl_clubs`, porque identifica a la organización.
@@ -31,15 +36,20 @@ En desarrollo se crean usuarios de ejemplo (contraseña `favl1234`, o `SEED_PASS
 ### Cómo se ingresa
 
 El sitio público (menú) tiene un botón **Ingresar** que lleva a `/admin/login`. Al loguearse, cada usuario
-cae en la página de su rol (definida en `LANDING`, `backoffice/access.ts`), salvo que venga de una
-ruta protegida: en ese caso vuelve a ella.
+cae en `/admin/panel` (salvo que venga de una ruta protegida: en ese caso vuelve a ella). El logo del
+sidebar apunta a `/admin`, que redirige ahí.
 
-| Rol          | Página de inicio       |
-| ------------ | ---------------------- |
-| Admin        | `/admin/panel`         |
-| Secretaría   | `/admin/socios`        |
-| Tesorería    | `/admin/socios/cuotas` |
-| Comunicación | `/admin/web/noticias`  |
+El panel es una sola vista (`panel/views/index.njk`) que incluye el parcial del rol
+(`panel/views/partials/panel*.njk`), elegido en `PANEL_BY_ROLE` (`src/common/navigation.ts`):
+
+| Rol                 | Parcial del panel            |
+| ------------------- | ---------------------------- |
+| Admin               | `partials/panelAdmin.njk`    |
+| Comisión directiva  | `partials/panelCd.njk`       |
+| Tesorería           | `partials/panelTesorero.njk` |
+| Comunicación        | `partials/panelEditor.njk`   |
+| Club                | `partials/panelClub.njk`     |
+| Piloto              | `partials/panelPiloto.njk`   |
 
 ### Login de desarrollo (probar roles rápido)
 
@@ -95,6 +105,9 @@ Alias: `@common/*` -> `src/common/*`, `@modules/*` -> `src/modules/*`.
   Olvidarse el decorador da un 401 visible, nunca una puerta abierta.
 - **Roles**: `@Roles(...ACCESS.socios)` en la clase o en el método (el método pisa a la clase).
   `Admin` siempre pasa. Sin `@Roles`, alcanza con estar logueado.
+- **Portales**: las rutas de portal (`/admin/favl-clubs`, `/admin/favl-pilots`) usan
+  `@StrictRoles(Role.club)` / `@StrictRoles(Role.piloto)`: igual que `@Roles` pero **sin** el pase
+  de admin, que también recibe la página 403 (no alcanza con ser admin para entrar al panel de otro).
 - **Agregar una sección al backoffice**: 1) sumarla a `ACCESS`, 2) `@Roles(...ACCESS.x)` en su
   controlador, 3) `roles: ACCESS.x` en `menu.ts`.
 - **Agregar un rol**: sumarlo a `Role` y a `ROLE_LABELS` (`common/types/role.ts`) y a `LANDING`

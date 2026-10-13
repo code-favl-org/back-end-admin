@@ -58,9 +58,9 @@ export class NewsArticle {
   @Column({ name: 'author_id', type: 'bigint', unsigned: true, nullable: true })
   authorId: number | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'datetime', precision: 3, nullable: true })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp', precision: 3, nullable: true })
   createdAt: Date | null;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'datetime', precision: 3, nullable: true })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', precision: 3, nullable: true })
   updatedAt: Date | null;
 }

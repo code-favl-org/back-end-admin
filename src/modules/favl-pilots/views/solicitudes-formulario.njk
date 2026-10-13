@@ -8,7 +8,8 @@
   <div class="card-header"><h3 class="card-title">{{ titulo }}</h3></div>
   <div class="card-body">
     {% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
-    <form method="post" action="{{ action }}" enctype="multipart/form-data">
+    <div id="avisos" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080"></div>
+    <form id="solicitud-form" method="post" action="{{ action }}" enctype="multipart/form-data">
       {% if not creating %}
       <div class="mb-3"><label class="form-label">ID</label><input type="text" class="form-control" value="{{ registro.id }}" disabled></div>
       {% endif %}
@@ -91,6 +92,80 @@
     });
 
     if (canvas.dataset.imageUrl) showImage(canvas.dataset.imageUrl);
+  })();
+</script>
+
+<script>
+  {# Chequeo en vivo: avisa con un toast si el documento o el email ya existen, y frena el envío. #}
+  (() => {
+    const formulario = document.getElementById('solicitud-form');
+    const documento = document.getElementById('document');
+    const tipo = document.getElementById('documentType');
+    const email = document.getElementById('email');
+    const avisos = document.getElementById('avisos');
+    if (!formulario || !documento || !tipo || !email || !avisos) return;
+
+    function mostrar(mensaje) {
+      const toast = document.createElement('div');
+      toast.className = 'toast align-items-center text-bg-warning border-0';
+      toast.setAttribute('role', 'alert');
+      toast.innerHTML = '<div class="d-flex"><div class="toast-body"></div>'
+        + '<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button></div>';
+      toast.querySelector('.toast-body').textContent = mensaje;
+      avisos.append(toast);
+      new bootstrap.Toast(toast, { delay: 8000 }).show();
+      toast.addEventListener('hidden.bs.toast', () => toast.remove());
+    }
+
+    async function conflictos() {
+      const parametros = new URLSearchParams({
+        document: documento.value,
+        documentType: tipo.value,
+        email: email.value,
+      });
+      try {
+        const respuesta = await fetch(`{{ basePath }}/verificar?${parametros}`, {
+          headers: { Accept: 'application/json' },
+        });
+        if (!respuesta.ok) return [];
+        const datos = await respuesta.json();
+        const lista = [];
+        if (datos.documento) {
+          lista.push(datos.documento.origen === 'solicitud'
+            ? 'ya hay una solicitud pendiente con ese documento'
+            : `el documento ya figura en el padrón${datos.documento.activo ? '' : ' (dado de baja)'}`);
+        }
+        if (datos.email) {
+          lista.push(datos.email.origen === 'solicitud'
+            ? 'ya hay una solicitud pendiente con ese email'
+            : `el email ya tiene una cuenta${datos.email.activo ? '' : ' (inactiva)'}`);
+        }
+        return lista;
+      } catch {
+        return [];
+      }
+    }
+
+    async function avisar() {
+      const lista = await conflictos();
+      if (lista.length > 0) {
+        mostrar(`Revisá los datos: ${lista.join(' y ')}. No se va a poder cargar la solicitud.`);
+      }
+      return lista.length;
+    }
+
+    for (const campo of [documento, tipo, email]) {
+      campo.addEventListener('blur', () => void avisar());
+    }
+
+    // Frena el envío antes de que el servidor lo rechace y se pierda la foto cargada.
+    formulario.addEventListener('submit', async (evento) => {
+      if (formulario.dataset.verificado === 'ok') return;
+      evento.preventDefault();
+      if (await avisar() > 0) return;
+      formulario.dataset.verificado = 'ok';
+      formulario.requestSubmit();
+    });
   })();
 </script>
 {% endblock %}

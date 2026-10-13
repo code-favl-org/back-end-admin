@@ -70,7 +70,7 @@ export class FavlClubsService {
     const club = this.repository.create({
       ...fields,
       ...(logo ? { logo } : {}),
-      active: '1',
+      active: true,
     });
     await this.repository.manager.transaction(async (manager) => {
       const clubs = manager.getRepository(FavlClub);
@@ -102,7 +102,7 @@ export class FavlClubsService {
 
   async cambiarEstado(id: number, active: boolean): Promise<void> {
     const club = await this.obtener(id);
-    club.active = active ? '1' : '0';
+    club.active = active;
     await this.repository.save(club);
   }
 }

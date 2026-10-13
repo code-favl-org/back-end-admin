@@ -54,6 +54,7 @@ export class FavlSchool {
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',
+    precision: 3,
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
@@ -61,6 +62,7 @@ export class FavlSchool {
   @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamp',
+    precision: 3,
     default: () => 'CURRENT_TIMESTAMP',
     onUpdate: 'CURRENT_TIMESTAMP',
   })

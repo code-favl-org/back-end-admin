@@ -87,10 +87,10 @@ export class FavlNewPilot {
   @Column({ type: 'char', length: 2, nullable: true, default: '1' })
   gender: string | null;
 
-  @UpdateDateColumn({
+  @Column({
     type: 'timestamp',
+    precision: 3,
     default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
   })
   datein: Date;
 
@@ -105,6 +105,7 @@ export class FavlNewPilot {
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',
+    precision: 3,
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
@@ -112,6 +113,7 @@ export class FavlNewPilot {
   @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamp',
+    precision: 3,
     default: () => 'CURRENT_TIMESTAMP',
     onUpdate: 'CURRENT_TIMESTAMP',
   })

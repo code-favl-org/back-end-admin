@@ -2,9 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from '../../users/entities/user.entity';
 
 @Entity({ name: 'favl_clubs' })
 export class FavlClub {
@@ -35,8 +38,8 @@ export class FavlClub {
   @Column({ type: 'varchar', length: 100, nullable: true })
   website: string | null;
 
-  @Column({ type: 'char', length: 2, nullable: true })
-  active: string | null;
+  @Column({ type: 'boolean', nullable: true })
+  active: boolean | null;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   address: string | null;
@@ -68,6 +71,7 @@ export class FavlClub {
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',
+    precision: 3,
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
@@ -75,8 +79,13 @@ export class FavlClub {
   @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamp',
+    precision: 3,
     default: () => 'CURRENT_TIMESTAMP',
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
+
+  @OneToOne(() => User, { onDelete: 'RESTRICT' })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

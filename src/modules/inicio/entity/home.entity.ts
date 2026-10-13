@@ -4,7 +4,7 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateCol
  * Portada del sitio: una sola fila con los textos que se editan en `/admin/web/inicio`.
  *
  * Los nombres de columna son los de la tabla `home` que ya existe en la base (`sub_title`,
- * `image_url`, `datetime(3)`): se declaran explícitos para que `DB_SYNCHRONIZE` no invente
+ * `image_url`, `timestamp(3)`): se declaran explícitos para que `DB_SYNCHRONIZE` no invente
  * columnas nuevas ni altere la tabla (si no coincidiera, el texto guardado quedaría en una
  * columna vieja y la pantalla se vería vacía).
  */
@@ -25,9 +25,9 @@ export class Home {
   @Column({ name: 'image_url', type: 'varchar', length: 255, nullable: true })
   imageUrl: string | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'datetime', precision: 3 })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp', precision: 3 })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'datetime', precision: 3, nullable: true })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', precision: 3, nullable: true })
   updatedAt: Date | null;
 }

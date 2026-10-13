@@ -236,20 +236,25 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
     };
   }
 
-  async profileImage(user: AuthUser): Promise<string | undefined> {
+  /** Foto y nombre para la barra: del club si la cuenta es de club, si no del perfil. */
+  async identity(user: AuthUser): Promise<{ image?: string; name?: string }> {
     if (user.roles.includes(Role.club)) {
       const club = await this.clubs.findOne({
-        select: ['logo'],
+        select: ['logo', 'name', 'fullName'],
         where: { userId: user.id },
       });
-      return club?.logo && club.logo !== 'no.jpg' ? club.logo : undefined;
+      return {
+        image: club?.logo && club.logo !== 'no.jpg' ? club.logo : undefined,
+        name: club?.fullName || club?.name || undefined,
+      };
     }
 
     const profile = await this.profiles.findOne({
-      select: ['photo'],
+      select: ['photo', 'firstName', 'lastName'],
       where: { userId: user.id },
     });
-    return profile?.photo || undefined;
+    const name = [profile?.firstName, profile?.lastName].filter(Boolean).join(' ').trim();
+    return { image: profile?.photo || undefined, name: name || undefined };
   }
 
   /** Revoca la sesión a la que pertenecen los tokens (si existe). */

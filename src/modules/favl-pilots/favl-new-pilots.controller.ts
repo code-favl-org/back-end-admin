@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   Res,
   UploadedFile,
   UseInterceptors,
@@ -14,7 +15,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Response } from 'express';
 import { Roles } from '../../common/authorization';
@@ -64,6 +65,17 @@ export class FavlNewPilotsController {
       registro: {},
       creating: true,
     });
+  }
+
+  /** Chequeo en vivo del formulario: ¿el documento o el email ya están en la base? */
+  @Get('verificar')
+  @ApiOperation({ summary: 'Verificar documento y email antes de cargar la solicitud' })
+  verificar(
+    @Query('document') document?: string,
+    @Query('documentType') documentType?: string,
+    @Query('email') email?: string,
+  ) {
+    return this.newPilots.verificar(document, documentType, email);
   }
 
   @Post()

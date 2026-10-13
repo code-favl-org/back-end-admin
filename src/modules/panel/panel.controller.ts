@@ -1,36 +1,29 @@
-import { Controller, Get, Redirect, Render } from '@nestjs/common';
+import { Controller, Get, Redirect, Req, Res } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import type { Request, Response } from 'express';
+import { PANEL_PATH, PANEL_VIEW, panelLocals } from '../../common/navigation';
 
 /**
- * Panel de inicio (/admin y /admin/panel).
- * Sin @Roles: cualquier usuario autenticado, de cualquier rol, puede entrar.
+ * Panel de inicio del backoffice (`/admin` y `/admin/panel`).
+ * Un solo marco de vista que incluye el parcial del rol (`panelAdmin`, `panelClub`, …).
  */
 @ApiTags('Panel')
 @Controller('admin')
 export class PanelController {
   /** /admin -> /admin/panel */
   @Get()
-  @Redirect('/admin/panel')
+  @Redirect(PANEL_PATH)
   @ApiOperation({ summary: 'Redirigir al panel' })
   @ApiResponse({ status: 302, description: 'Redirige a `/admin/panel`.' })
   index() {}
 
-  /** Tarjetas con los números del panel. */
+  /** Panel del rol del usuario. */
   @Get('panel')
-  @Render('panel/views/index')
   @ApiOperation({
     summary: 'Panel de inicio',
-    description: 'HTML con las tarjetas de números (hoy, datos de ejemplo).',
+    description: 'HTML con el panel del rol (`panelAdmin`, `panelClub`, …).',
   })
-  panel() {
-    // TODO: reemplazar por datos reales (servicios de pilotos, clubes, etc.)
-    return {
-      stats: [
-        { valor: 245, etiqueta: 'Pilotos activos', color: 'primary', icono: 'bi-people-fill' },
-        { valor: 18, etiqueta: 'Clubes', color: 'success', icono: 'bi-building' },
-        { valor: 7, etiqueta: 'Eventos este mes', color: 'warning', icono: 'bi-calendar-event' },
-        { valor: 3, etiqueta: 'Cuotas pendientes', color: 'danger', icono: 'bi-cash-coin' },
-      ],
-    };
+  panel(@Req() request: Request, @Res() response: Response) {
+    return response.render(PANEL_VIEW, panelLocals(request.user?.roles));
   }
 }

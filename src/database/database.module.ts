@@ -37,6 +37,8 @@ class DatabaseConnectionLogger implements OnModuleInit {
         username: config.db.username,
         password: config.db.password,
         database: config.db.database,
+        // La base guarda todos los TIMESTAMP en UTC; el driver lee/escribe igual para no convertir.
+        timezone: 'Z',
         autoLoadEntities: true,
         synchronize: config.db.synchronize,
         verboseRetryLog: config.env === 'development',

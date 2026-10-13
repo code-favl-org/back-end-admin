@@ -1,6 +1,6 @@
 import type { AuthUser } from '../../common/types';
 import { isBackofficePath } from '../../common/middleware/backoffice.locals';
-import { Role } from '../../common/types';
+import { PANEL_PATH } from '../../common/navigation';
 
 /**
  * Valida a dónde se puede volver después de ingresar. Solo se acepta una ruta
@@ -25,18 +25,8 @@ export function safeNext(next?: string): string | undefined {
 /**
  * Destino tras ingresar: la ruta que el usuario pedía (`next`, si es válida) o,
  * si no pedía ninguna (ej.: entró desde el enlace "Ingresar" del sitio público),
- * la página inicial según su rol.
+ * el panel de inicio, que se arma según el rol.
  */
 export function redirectAfterLogin(next: string | undefined, user: AuthUser): string {
-  const role = user.roles.find((candidate) => Object.prototype.hasOwnProperty.call(Role, candidate)) ?? Role.admin;
-  const landingByRole: Record<Role, string> = {
-    [Role.admin]: '/admin/panel',
-    [Role.cd]: '/admin/favl-pilots/padron',
-    [Role.tesorero]: '/admin/favl-pilots/cuotas',
-    [Role.editor]: '/admin/web/noticias',
-    [Role.club]: '/admin/favl-clubs',
-    [Role.piloto]: '/admin/favl-pilots',
-  };
-
-  return safeNext(next) ?? landingByRole[role];
+  return safeNext(next) ?? PANEL_PATH;
 }

@@ -14,7 +14,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Response } from 'express';
 import { CurrentUser } from '../../common/decorators';
-import { Roles } from '../../common/authorization';
+import { StrictRoles } from '../../common/authorization';
 import { FavlFormValidationFilter } from '../../common/filters/favl-form-validation.filter';
 import type { AuthUser } from '../../common/types';
 import { Role } from '../../common/types/role';
@@ -28,7 +28,7 @@ const FORM_VIEW = 'favl-pilots/views/formulario';
 const PILOT_PHOTO = imageUploads('img/piloto');
 
 @Controller(BASE_PATH)
-@Roles(Role.piloto)
+@StrictRoles(Role.piloto)
 @UsePipes(new ValidationPipe({
   transform: true,
   whitelist: true,

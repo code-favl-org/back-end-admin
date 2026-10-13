@@ -2,9 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from './user.entity';
 
 @Entity({ name: 'user_profiles' })
 export class UserProfile {
@@ -50,6 +53,7 @@ export class UserProfile {
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',
+    precision: 3,
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
@@ -57,8 +61,13 @@ export class UserProfile {
   @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamp',
+    precision: 3,
     default: () => 'CURRENT_TIMESTAMP',
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
+
+  @OneToOne(() => User, { onDelete: 'RESTRICT' })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

@@ -50,9 +50,9 @@ export class User {
   @Column({ type: 'boolean', default: true })
   activo: boolean;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp', precision: 3 })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', precision: 3 })
   updatedAt: Date;
 }

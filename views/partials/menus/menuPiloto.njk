@@ -1,11 +1,25 @@
 <li class="nav-header">PILOTO</li>
 <li class="nav-item">
-  <a href="/admin/favl-pilots" class="nav-link{{ ' active' if isMenuActive('/admin/favl-pilots') }}">
+  <a
+    href="/admin/favl-pilots"
+    class="nav-link{{ ' active' if isMenuActive('/admin/favl-pilots', true) }}"
+  >
     <i class="nav-icon bi bi-speedometer2"></i><p>Panel</p>
   </a>
 </li>
 <li class="nav-item">
-  <a href="/admin/favl-pilots/perfil" class="nav-link{{ ' active' if isMenuActive('/admin/favl-pilots/perfil') }}">
+  <a
+    href="/admin/favl-pilots/perfil"
+    class="nav-link{{ ' active' if isMenuActive('/admin/favl-pilots/perfil') }}"
+  >
     <i class="nav-icon bi bi-person-vcard"></i><p>Mi perfil</p>
+  </a>
+</li>
+<li class="nav-item">
+  <a
+    href="/admin/favl-pilots/cnd"
+    class="nav-link{{ ' active' if isMenuActive('/admin/favl-pilots/cnd') }}"
+  >
+    <i class="nav-icon bi bi-person-vcard"></i><p>Mi CND</p>
   </a>
 </li>

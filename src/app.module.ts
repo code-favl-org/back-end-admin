@@ -8,6 +8,7 @@ import { AppConfigModule } from './config';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BannersModule } from './modules/banners/banners.module';
+import { FavlCndModule } from './modules/favl-cnd/favl-cnd.module';
 import { FavlClubsModule } from './modules/favl-clubs/favl-clubs.module';
 import { FavlPilotsModule } from './modules/favl-pilots/favl-pilots.module';
 import { FavlSchoolsModule } from './modules/favl-schools/favl-schools.module';
@@ -26,6 +27,7 @@ import { UsersModule } from './modules/users/users.module';
     PanelModule,
     NoticiasModule,
     BannersModule,
+    FavlCndModule,
     FavlClubsModule,
     FavlPilotsModule,
     FavlSchoolsModule,
